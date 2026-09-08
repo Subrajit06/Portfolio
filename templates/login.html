@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
-    <div class="absolute w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+<section class="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
+    <div class="absolute w-[450px] h-[450px] bg-purple-600/15 rounded-full blur-[130px] pointer-events-none"></div>
 
     <div class="max-w-md w-full space-y-8 glass-card p-8 sm:p-10 rounded-3xl border border-slate-800 shadow-2xl relative z-10">
         
@@ -10,23 +10,23 @@
             <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-purple-500/30 mb-4">
                 <i data-lucide="shield-check" class="w-8 h-8"></i>
             </div>
-            <h2 class="text-2xl font-extrabold text-white">Admin Authentication</h2>
-            <p class="text-slate-400 text-xs mt-2">Log in with Username or Email to access control panel</p>
+            <h2 class="text-2xl font-extrabold text-white">Firebase Admin Login</h2>
+            <p class="text-slate-400 text-xs mt-2">Strict Registered Admin Email Authentication</p>
         </div>
 
         <form action="{{ url_for('login') }}" method="POST" class="space-y-6">
             <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-2">Username or Email Address</label>
+                <label class="block text-xs font-semibold text-slate-300 mb-2">Registered Admin Email or Username *</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                        <i data-lucide="user" class="w-4 h-4"></i>
+                        <i data-lucide="mail" class="w-4 h-4"></i>
                     </div>
-                    <input type="text" name="username_or_email" required placeholder="admin or subhrajitbhattacharjee@gmail.com" value="subhrajitbhattacharjee@gmail.com" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-sm">
+                    <input type="text" name="username_or_email" required value="subhrajitbhattacharjee@gmail.com" placeholder="subhrajitbhattacharjee@gmail.com" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-sm">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-2">Password</label>
+                <label class="block text-xs font-semibold text-slate-300 mb-2">Admin Password *</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                         <i data-lucide="lock" class="w-4 h-4"></i>
@@ -36,13 +36,13 @@
             </div>
 
             <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs flex items-center space-x-2">
-                <i data-lucide="info" class="w-4 h-4 flex-shrink-0"></i>
-                <span>Log in with <strong>Email</strong> or <strong>Username</strong> + Password (<strong>admin123</strong>)</span>
+                <i data-lucide="shield-alert" class="w-4 h-4 flex-shrink-0"></i>
+                <span>Strict Access: Registered Email <strong>subhrajitbhattacharjee@gmail.com</strong></span>
             </div>
 
             <button type="submit" class="w-full py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl shadow-purple-500/25 hover:scale-[1.02] transition-all flex items-center justify-center space-x-2">
                 <i data-lucide="log-in" class="w-4 h-4"></i>
-                <span>Access Admin Panel</span>
+                <span>Verify Firebase Admin & Login</span>
             </button>
         </form>
 

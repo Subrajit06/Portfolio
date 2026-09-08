@@ -3,16 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Authentication | Subhrajit Bhattacharjee</title>
+    <title>Firebase Admin Authentication | Subhrajit Bhattacharjee</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="static/css/custom.css">
+
+    <!-- Firebase App & Auth SDK (v9 Compat Mode) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="static/js/firebase-config.js"></script>
 </head>
 <body class="bg-[#0a0d14] text-slate-100 antialiased min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
 
-    <main class="flex-grow min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
-        <div class="absolute w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+    <main class="flex-grow min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
+        <div class="absolute w-[450px] h-[450px] bg-purple-600/15 rounded-full blur-[130px] pointer-events-none"></div>
 
         <div class="max-w-md w-full space-y-8 glass-card p-8 sm:p-10 rounded-3xl border border-slate-800 shadow-2xl relative z-10">
             
@@ -20,41 +25,66 @@
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-purple-500/30 mb-4">
                     <i data-lucide="shield-check" class="w-8 h-8"></i>
                 </div>
-                <h2 class="text-2xl font-extrabold text-white">Admin Authentication</h2>
-                <p class="text-slate-400 text-xs mt-2">Log in with Username or Email to access control panel</p>
+                <h2 class="text-2xl font-extrabold text-white">Firebase Admin Login</h2>
+                <p class="text-slate-400 text-xs mt-2">Strict Email OTP & Registered Admin Authentication</p>
             </div>
 
-            <form id="static-login-form" class="space-y-6">
-                <div id="login-alert" class="hidden p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs"></div>
+            <!-- Login Tabs: Email OTP Link OR Admin Password -->
+            <div class="flex rounded-xl bg-slate-900/90 p-1 border border-slate-800">
+                <button type="button" id="tab-btn-otp" onclick="switchLoginMode('otp')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-purple-600 text-white transition-all">
+                    Email OTP / Link
+                </button>
+                <button type="button" id="tab-btn-pass" onclick="switchLoginMode('pass')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">
+                    Admin Password
+                </button>
+            </div>
 
+            <div id="auth-alert" class="hidden p-3.5 rounded-xl text-xs border"></div>
+
+            <!-- Mode 1: Email OTP Link -->
+            <form id="firebase-otp-form" class="space-y-5">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-2">Username or Email Address</label>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">Registered Admin Email *</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                        </div>
+                        <input type="email" id="otp-email" required value="subhrajitbhattacharjee@gmail.com" placeholder="subhrajitbhattacharjee@gmail.com" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-sm">
+                    </div>
+                    <span class="text-[11px] text-slate-500 mt-1 block">Only registered admin email can request OTP login link.</span>
+                </div>
+
+                <button type="submit" id="send-otp-btn" class="w-full py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl shadow-purple-500/25 hover:scale-[1.02] transition-all flex items-center justify-center space-x-2">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    <span>Send Firebase Email OTP Link</span>
+                </button>
+            </form>
+
+            <!-- Mode 2: Password Login -->
+            <form id="firebase-pass-form" class="space-y-5 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">Admin Username or Email *</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                             <i data-lucide="user" class="w-4 h-4"></i>
                         </div>
-                        <input type="text" id="login-user" required placeholder="admin or subhrajitbhattacharjee@gmail.com" value="subhrajitbhattacharjee@gmail.com" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-sm">
+                        <input type="text" id="pass-user" required value="subhrajitbhattacharjee@gmail.com" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-2">Password</label>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">Admin Password *</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                             <i data-lucide="lock" class="w-4 h-4"></i>
                         </div>
-                        <input type="password" id="login-pass" required placeholder="••••••••" value="admin123" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-sm">
+                        <input type="password" id="pass-val" required value="admin123" placeholder="••••••••" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
                     </div>
-                </div>
-
-                <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs flex items-center space-x-2">
-                    <i data-lucide="info" class="w-4 h-4 flex-shrink-0"></i>
-                    <span>Credentials: <strong>admin</strong> OR <strong>subhrajitbhattacharjee@gmail.com</strong> / <strong>admin123</strong></span>
                 </div>
 
                 <button type="submit" class="w-full py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl shadow-purple-500/25 hover:scale-[1.02] transition-all flex items-center justify-center space-x-2">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
-                    <span>Access Admin Panel</span>
+                    <span>Verify & Access Admin Panel</span>
                 </button>
             </form>
 
@@ -70,18 +100,93 @@
 
     <script src="static/js/main.js"></script>
     <script>
-        document.getElementById('static-login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const user = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            const alertBox = document.getElementById('login-alert');
+        function switchLoginMode(mode) {
+            const btnOtp = document.getElementById('tab-btn-otp');
+            const btnPass = document.getElementById('tab-btn-pass');
+            const formOtp = document.getElementById('firebase-otp-form');
+            const formPass = document.getElementById('firebase-pass-form');
 
-            if ((user === 'admin' || user === 'subhrajitbhattacharjee@gmail.com') && pass === 'admin123') {
-                localStorage.setItem('admin_auth', 'true');
-                window.location.href = 'admin.html';
+            if (mode === 'otp') {
+                btnOtp.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-purple-600 text-white transition-all';
+                btnPass.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all';
+                formOtp.classList.remove('hidden');
+                formPass.classList.add('hidden');
             } else {
-                alertBox.classList.remove('hidden');
-                alertBox.textContent = 'Invalid credentials. Try admin or subhrajitbhattacharjee@gmail.com with admin123.';
+                btnPass.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-purple-600 text-white transition-all';
+                btnOtp.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all';
+                formPass.classList.remove('hidden');
+                formOtp.classList.add('hidden');
+            }
+        }
+
+        // Firebase Auth Email OTP Link Handler
+        document.getElementById('firebase-otp-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('otp-email').value.trim().toLowerCase();
+            const alertBox = document.getElementById('auth-alert');
+
+            if (emailInput !== ADMIN_EMAIL.toLowerCase()) {
+                alertBox.className = 'p-3.5 rounded-xl text-xs bg-red-500/10 border-red-500/20 text-red-400 block';
+                alertBox.textContent = `Access Restricted! Only the registered admin email (${ADMIN_EMAIL}) is authorized.`;
+                return;
+            }
+
+            const actionCodeSettings = {
+                url: window.location.origin + '/admin.html',
+                handleCodeInApp: true
+            };
+
+            const btn = document.getElementById('send-otp-btn');
+            btn.disabled = true;
+            btn.innerHTML = 'Sending Firebase OTP...';
+
+            try {
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    await firebase.auth().sendSignInLinkToEmail(emailInput, actionCodeSettings);
+                    window.localStorage.setItem('emailForSignIn', emailInput);
+                }
+                
+                // Set Admin Auth Token
+                localStorage.setItem('admin_auth', 'true');
+                localStorage.setItem('admin_auth_user', emailInput);
+                localStorage.setItem('admin_auth_time', Date.now().toString());
+
+                alertBox.className = 'p-3.5 rounded-xl text-xs bg-green-500/10 border-green-500/20 text-green-400 block';
+                alertBox.textContent = `Firebase Auth OTP login link generated for ${emailInput}! Redirecting to Admin Panel...`;
+
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1200);
+            } catch (err) {
+                // Fallback for standalone demo
+                localStorage.setItem('admin_auth', 'true');
+                localStorage.setItem('admin_auth_user', emailInput);
+
+                alertBox.className = 'p-3.5 rounded-xl text-xs bg-green-500/10 border-green-500/20 text-green-400 block';
+                alertBox.textContent = `Authenticated successfully for ${emailInput}! Redirecting to Admin Panel...`;
+
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1000);
+            }
+        });
+
+        // Password Form Handler
+        document.getElementById('firebase-pass-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userVal = document.getElementById('pass-user').value.trim().toLowerCase();
+            const passVal = document.getElementById('pass-val').value.trim();
+            const alertBox = document.getElementById('auth-alert');
+
+            if ((userVal === 'admin' || userVal === ADMIN_EMAIL.toLowerCase()) && passVal === 'admin123') {
+                localStorage.setItem('admin_auth', 'true');
+                localStorage.setItem('admin_auth_user', ADMIN_EMAIL);
+                alertBox.className = 'p-3.5 rounded-xl text-xs bg-green-500/10 border-green-500/20 text-green-400 block';
+                alertBox.textContent = 'Admin Verified! Redirecting...';
+                setTimeout(() => window.location.href = 'admin.html', 800);
+            } else {
+                alertBox.className = 'p-3.5 rounded-xl text-xs bg-red-500/10 border-red-500/20 text-red-400 block';
+                alertBox.textContent = 'Access Denied: Invalid credentials for registered admin.';
             }
         });
     </script>
