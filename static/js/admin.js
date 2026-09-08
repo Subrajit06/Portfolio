@@ -1,4 +1,4 @@
-// Admin Management Logic with Email OTP & Route Protection Guard
+// Admin Management Logic - Smooth Glitch-Free Version
 
 const ADMIN_EMAIL = "subhrajitbhattacharjee6@gmail.com";
 
@@ -8,31 +8,56 @@ function getLoginUrl() {
 }
 
 function checkAdminSecurity() {
-    const isAuth = localStorage.getItem('admin_auth') === 'true';
-    const authUser = (localStorage.getItem('admin_auth_user') || '').toLowerCase();
-
-    // If verified with OTP or authenticated, access is 100% GRANTED!
-    if (isAuth || (authUser && (authUser === ADMIN_EMAIL.toLowerCase() || authUser === 'admin'))) {
+    // If on Flask server (running via http on port 5000), Flask @login_required handles server-side auth
+    const isFlaskServer = window.location.port === '5000' || window.location.pathname === '/admin';
+    if (isFlaskServer) {
+        localStorage.setItem('admin_auth', 'true');
+        localStorage.setItem('admin_auth_user', ADMIN_EMAIL);
         return true;
     }
 
-    // Unauthenticated visitors are redirected smoothly to the OTP login portal
-    window.location.href = getLoginUrl();
+    const isAuth = localStorage.getItem('admin_auth') === 'true';
+    if (isAuth) {
+        return true;
+    }
+
+    // Smooth Inline Auth Guard (No glitchy page redirects)
+    const container = document.querySelector('main') || document.body;
+    container.innerHTML = `
+        <div class="min-h-[70vh] flex items-center justify-center p-6 text-center">
+            <div class="glass-card p-8 sm:p-10 rounded-3xl max-w-md w-full border border-slate-800 space-y-6">
+                <div class="w-16 h-16 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20 mx-auto flex items-center justify-center text-3xl">
+                    🔒
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Admin Authentication Required</h2>
+                    <p class="text-slate-400 text-xs mt-2">Please verify with 6-Digit Email OTP to access your control panel.</p>
+                </div>
+                <a href="${getLoginUrl()}" class="inline-block w-full py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl shadow-purple-500/25 hover:scale-[1.02] transition-all">
+                    Open Email OTP Login Portal
+                </a>
+            </div>
+        </div>
+    `;
     return false;
 }
 
 function logoutAdmin() {
     localStorage.removeItem('admin_auth');
     localStorage.removeItem('admin_auth_user');
-    window.location.href = getLoginUrl();
+    const isFlaskServer = window.location.port === '5000' || window.location.pathname === '/admin';
+    window.location.href = isFlaskServer ? '/logout' : getLoginUrl();
 }
 
-function switchAdminTab(targetId) {
+function switchAdminTab(targetId, evt) {
+    if (evt) evt.preventDefault();
+
     const navLinks = document.querySelectorAll('.admin-nav-link');
     const tabContents = document.querySelectorAll('.admin-tab-content');
 
     navLinks.forEach(link => {
-        if (link.getAttribute('href') === `#${targetId}`) {
+        const href = link.getAttribute('href') || '';
+        if (href.includes(targetId)) {
             link.className = 'admin-nav-link active-tab px-5 py-2.5 text-xs font-bold rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center space-x-2';
         } else {
             link.className = 'admin-nav-link px-5 py-2.5 text-xs font-bold rounded-xl text-slate-400 hover:bg-slate-800 flex items-center space-x-2';
@@ -46,6 +71,8 @@ function switchAdminTab(targetId) {
             content.classList.add('hidden');
         }
     });
+
+    if (window.lucide) lucide.createIcons();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -58,6 +85,22 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAdminMessages();
     fillAdminSettings();
 
+    // Attach click listeners to admin nav links smoothly
+    const navLinks = document.querySelectorAll('.admin-nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const href = link.getAttribute('href') || '';
+            const targetId = href.replace('#', '');
+            if (targetId) switchAdminTab(targetId, e);
+        });
+    });
+
+    // Check hash on load
+    const hash = window.location.hash.replace('#', '');
+    if (hash) switchAdminTab(hash);
+
+    // Static Add Project Form Handler
     const addProjForm = document.getElementById('static-add-project-form');
     if (addProjForm) {
         addProjForm.addEventListener('submit', (e) => {
@@ -88,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Static Add Skill Form Handler
     const addSkillForm = document.getElementById('static-add-skill-form');
     if (addSkillForm) {
         addSkillForm.addEventListener('submit', (e) => {
@@ -112,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Static Settings Form Handler
     const settingsForm = document.getElementById('admin-settings-form');
     if (settingsForm) {
         settingsForm.addEventListener('submit', (e) => {
