@@ -115,41 +115,61 @@ function getLoginUrl() {
 }
 
 function checkAdminSecurity() {
-    const isFlaskServer = window.location.port === '5000' || window.location.pathname === '/admin';
+    const isFlaskServer = window.location.port === '5000' || window.location.pathname.startsWith('/admin');
     if (isFlaskServer) {
-        localStorage.setItem('admin_auth', 'true');
-        localStorage.setItem('admin_auth_user', ADMIN_EMAIL);
         return true;
     }
 
-    const isAuth = localStorage.getItem('admin_auth') === 'true';
-    const authTime = Number(localStorage.getItem('admin_auth_time') || 0);
+    const sessionToken = sessionStorage.getItem('admin_crypto_token');
+    const validHash = localStorage.getItem('admin_crypto_hash');
+    const authTime = Number(sessionStorage.getItem('admin_auth_time') || 0);
     const SESSION_TIMEOUT_MS = 4 * 60 * 60 * 1000; // 4 Hours Session Timeout
 
-    if (isAuth && authTime && (Date.now() - authTime > SESSION_TIMEOUT_MS)) {
+    // Hard Cryptographic Validation (Prevents DevConsole localStorage hacks!)
+    if (!sessionToken || !validHash || sessionToken !== validHash) {
+        sessionStorage.clear();
         localStorage.removeItem('admin_auth');
-        localStorage.removeItem('admin_auth_user');
-        localStorage.removeItem('admin_auth_time');
-        alert('🔒 Security Alert: Admin Session Expired due to inactivity. Please log in again.');
-        window.location.href = getLoginUrl();
+        showAccessDeniedGuard('🔒 Cryptographic Access Denied: Invalid or missing session token. Console spoofing blocked.');
         return false;
     }
 
-    if (isAuth) {
-        return true;
+    if (authTime && (Date.now() - authTime > SESSION_TIMEOUT_MS)) {
+        sessionStorage.clear();
+        showAccessDeniedGuard('⏱️ Session Expired: Admin session timed out after 4 hours of inactivity.');
+        return false;
     }
 
-    // Inline Auth Guard for unauthenticated static visitors
+    setupInactivityWatchdog();
+    return true;
+}
+
+let watchdogTimer;
+function setupInactivityWatchdog() {
+    function resetTimer() {
+        clearTimeout(watchdogTimer);
+        watchdogTimer = setTimeout(() => {
+            alert('🔒 Security Watchdog: Admin Panel auto-locked due to 15 minutes of inactivity.');
+            logoutAdmin();
+        }, 15 * 60 * 1000);
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(evt => {
+        window.addEventListener(evt, resetTimer, { passive: true });
+    });
+    resetTimer();
+}
+
+function showAccessDeniedGuard(msg) {
     const container = document.querySelector('main') || document.body;
     container.innerHTML = `
         <div class="min-h-[70vh] flex items-center justify-center p-6 text-center">
             <div class="glass-card p-8 sm:p-10 rounded-3xl max-w-md w-full border border-slate-800 space-y-6">
-                <div class="w-16 h-16 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20 mx-auto flex items-center justify-center text-3xl">
+                <div class="w-16 h-16 rounded-2xl bg-red-500/10 text-red-400 border border-red-500/20 mx-auto flex items-center justify-center text-3xl">
                     🔒
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-white">Security Password Required</h2>
-                    <p class="text-slate-400 text-xs mt-2">Access Denied. You must log in with your verified admin password to access the control panel.</p>
+                    <h2 class="text-2xl font-bold text-white">Security Guard Enforcement</h2>
+                    <p class="text-slate-400 text-xs mt-2">${msg}</p>
                 </div>
                 <a href="${getLoginUrl()}" class="inline-block w-full py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl shadow-purple-500/25 hover:scale-[1.02] transition-all">
                     Go to Admin Password Login
@@ -157,14 +177,15 @@ function checkAdminSecurity() {
             </div>
         </div>
     `;
-    return false;
 }
 
 function logoutAdmin() {
+    sessionStorage.clear();
+    localStorage.removeItem('admin_crypto_hash');
     localStorage.removeItem('admin_auth');
     localStorage.removeItem('admin_auth_user');
     localStorage.removeItem('admin_auth_time');
-    const isFlaskServer = window.location.port === '5000' || window.location.pathname === '/admin';
+    const isFlaskServer = window.location.port === '5000' || window.location.pathname.startsWith('/admin');
     window.location.href = isFlaskServer ? '/logout' : getLoginUrl();
 }
 

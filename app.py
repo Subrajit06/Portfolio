@@ -13,6 +13,19 @@ from database import get_db_connection, init_db
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# Session Security Configuration
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# HTTP Security Headers Middleware
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    return response
+
 # Ensure DB & Uploads are ready on startup
 init_db()
 
