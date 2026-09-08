@@ -1,4 +1,4 @@
-// Admin Management Logic - Clean Simple Password Protection & Working Modals
+// Admin Management Logic - Clean Simple Password Protection, Working Modals & Edit Functions
 
 const ADMIN_EMAIL = "subhrajitbhattacharjee6@gmail.com";
 
@@ -27,6 +27,86 @@ window.openAddSkillModal = function() {
 window.closeAddSkillModal = function() {
     const modal = document.getElementById('add-skill-modal');
     if (modal) modal.classList.add('hidden');
+};
+
+// Edit Project Modal Controls
+window.openEditProjectModal = function(p) {
+    const modal = document.getElementById('edit-project-modal');
+    const form = document.getElementById('edit-project-form');
+    if (!modal || !form) return;
+
+    form.dataset.editId = p.id;
+    const isFlaskServer = window.location.port === '5000' || window.location.pathname.startsWith('/admin');
+    if (isFlaskServer && p.id) {
+        form.action = `/admin/projects/edit/${p.id}`;
+    }
+
+    if (document.getElementById('edit-proj-title')) document.getElementById('edit-proj-title').value = p.title || '';
+    if (document.getElementById('edit-proj-category')) document.getElementById('edit-proj-category').value = p.category || '';
+    if (document.getElementById('edit-proj-serial')) document.getElementById('edit-proj-serial').value = p.serial_order || 1;
+    if (document.getElementById('edit-proj-price')) document.getElementById('edit-proj-price').value = p.price || 'Contact';
+    if (document.getElementById('edit-proj-desc')) document.getElementById('edit-proj-desc').value = p.description || '';
+    if (document.getElementById('edit-proj-thumb-url')) document.getElementById('edit-proj-thumb-url').value = p.thumbnail || '';
+    if (document.getElementById('edit-proj-live')) document.getElementById('edit-proj-live').value = p.live_link || '';
+    if (document.getElementById('edit-proj-source')) document.getElementById('edit-proj-source').value = p.source_link || '';
+    if (document.getElementById('edit-proj-stack')) document.getElementById('edit-proj-stack').value = p.tech_stack || '';
+    
+    const isFeatured = Number(p.is_featured) === 1 || p.is_featured === '1' || p.is_featured === true || p.is_featured === 'True';
+    const isStore = Number(p.is_store_item) === 1 || p.is_store_item === '1' || p.is_store_item === true || p.is_store_item === 'True';
+
+    if (document.getElementById('edit-proj-featured')) document.getElementById('edit-proj-featured').checked = isFeatured;
+    if (document.getElementById('edit-proj-store')) document.getElementById('edit-proj-store').checked = isStore;
+
+    modal.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+};
+
+window.closeEditProjectModal = function() {
+    const modal = document.getElementById('edit-project-modal');
+    if (modal) modal.classList.add('hidden');
+};
+
+// Edit Skill Modal Controls
+window.openEditSkillModal = function(s) {
+    const modal = document.getElementById('edit-skill-modal');
+    const form = document.getElementById('edit-skill-form');
+    if (!modal || !form) return;
+
+    form.dataset.editId = s.id;
+    const isFlaskServer = window.location.port === '5000' || window.location.pathname.startsWith('/admin');
+    if (isFlaskServer && s.id) {
+        form.action = `/admin/skills/edit/${s.id}`;
+    }
+
+    if (document.getElementById('edit-skill-name')) document.getElementById('edit-skill-name').value = s.name || '';
+    if (document.getElementById('edit-skill-category')) document.getElementById('edit-skill-category').value = s.category || '';
+    if (document.getElementById('edit-skill-proficiency')) document.getElementById('edit-skill-proficiency').value = s.proficiency || 90;
+    if (document.getElementById('edit-skill-serial')) document.getElementById('edit-skill-serial').value = s.serial_order || 1;
+    if (document.getElementById('edit-skill-icon')) document.getElementById('edit-skill-icon').value = s.icon_class || 'code';
+
+    modal.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+};
+
+window.closeEditSkillModal = function() {
+    const modal = document.getElementById('edit-skill-modal');
+    if (modal) modal.classList.add('hidden');
+};
+
+window.triggerStaticEditProject = function(id) {
+    const projects = getStoredData('site_projects', DEFAULT_PROJECTS);
+    const p = projects.find(item => Number(item.id) === Number(id));
+    if (p) {
+        window.openEditProjectModal(p);
+    }
+};
+
+window.triggerStaticEditSkill = function(id) {
+    const skills = getStoredData('site_skills', DEFAULT_SKILLS);
+    const s = skills.find(item => Number(item.id) === Number(id));
+    if (s) {
+        window.openEditSkillModal(s);
+    }
 };
 
 function getLoginUrl() {
@@ -144,6 +224,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const closeEditProjBtn = document.getElementById('close-edit-project-btn');
+    if (closeEditProjBtn) {
+        closeEditProjBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.closeEditProjectModal();
+        });
+    }
+
+    const closeEditSkillBtn = document.getElementById('close-edit-skill-btn');
+    if (closeEditSkillBtn) {
+        closeEditSkillBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.closeEditSkillModal();
+        });
+    }
+
     // Modal Backdrop Clicks
     const allModals = document.querySelectorAll('.modal-overlay');
     allModals.forEach(modal => {
@@ -166,6 +262,43 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check hash on load
     const hash = window.location.hash.replace('#', '');
     if (hash) switchAdminTab(hash);
+
+    // Global Click Delegation for Edit Buttons (Jinja Server or Dynamic Rows)
+    document.addEventListener('click', (e) => {
+        const editProjBtn = e.target.closest('.edit-project-btn');
+        if (editProjBtn) {
+            e.preventDefault();
+            const d = editProjBtn.dataset;
+            window.openEditProjectModal({
+                id: d.id,
+                title: d.title,
+                description: d.desc,
+                category: d.category,
+                thumbnail: d.thumb,
+                live_link: d.live,
+                source_link: d.source,
+                serial_order: d.serial,
+                is_featured: d.featured,
+                is_store_item: d.store,
+                price: d.price,
+                tech_stack: d.stack
+            });
+        }
+
+        const editSkillBtn = e.target.closest('.edit-skill-btn');
+        if (editSkillBtn) {
+            e.preventDefault();
+            const d = editSkillBtn.dataset;
+            window.openEditSkillModal({
+                id: d.id,
+                name: d.name,
+                category: d.category,
+                proficiency: d.proficiency,
+                icon_class: d.icon,
+                serial_order: d.serial
+            });
+        }
+    });
 
     // Static Add Project Form Handler
     const addProjForm = document.getElementById('static-add-project-form');
@@ -198,6 +331,38 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Static Edit Project Form Handler
+    const editProjForm = document.getElementById('edit-project-form');
+    if (editProjForm) {
+        editProjForm.addEventListener('submit', (e) => {
+            const isFlaskServer = window.location.port === '5000' || window.location.pathname.startsWith('/admin');
+            if (!isFlaskServer) {
+                e.preventDefault();
+                const editId = Number(editProjForm.dataset.editId);
+                let projects = getStoredData('site_projects', DEFAULT_PROJECTS);
+                const index = projects.findIndex(p => Number(p.id) === editId);
+
+                if (index !== -1) {
+                    projects[index].title = document.getElementById('edit-proj-title').value;
+                    projects[index].category = document.getElementById('edit-proj-category').value;
+                    projects[index].serial_order = Number(document.getElementById('edit-proj-serial').value || 1);
+                    projects[index].price = document.getElementById('edit-proj-price').value || 'Contact';
+                    projects[index].description = document.getElementById('edit-proj-desc').value;
+                    projects[index].thumbnail = document.getElementById('edit-proj-thumb-url').value || projects[index].thumbnail;
+                    projects[index].live_link = document.getElementById('edit-proj-live').value;
+                    projects[index].source_link = document.getElementById('edit-proj-source').value;
+                    projects[index].tech_stack = document.getElementById('edit-proj-stack').value;
+                    projects[index].is_featured = document.getElementById('edit-proj-featured').checked ? 1 : 0;
+                    projects[index].is_store_item = document.getElementById('edit-proj-store').checked ? 1 : 0;
+
+                    localStorage.setItem('site_projects', JSON.stringify(projects));
+                    window.closeEditProjectModal();
+                    renderAdminProjects();
+                }
+            }
+        });
+    }
+
     // Static Add Skill Form Handler
     const addSkillForm = document.getElementById('static-add-skill-form');
     if (addSkillForm) {
@@ -220,6 +385,32 @@ document.addEventListener('DOMContentLoaded', () => {
             window.closeAddSkillModal();
             addSkillForm.reset();
             renderAdminSkills();
+        });
+    }
+
+    // Static Edit Skill Form Handler
+    const editSkillForm = document.getElementById('edit-skill-form');
+    if (editSkillForm) {
+        editSkillForm.addEventListener('submit', (e) => {
+            const isFlaskServer = window.location.port === '5000' || window.location.pathname.startsWith('/admin');
+            if (!isFlaskServer) {
+                e.preventDefault();
+                const editId = Number(editSkillForm.dataset.editId);
+                let skills = getStoredData('site_skills', DEFAULT_SKILLS);
+                const index = skills.findIndex(s => Number(s.id) === editId);
+
+                if (index !== -1) {
+                    skills[index].name = document.getElementById('edit-skill-name').value;
+                    skills[index].category = document.getElementById('edit-skill-category').value;
+                    skills[index].proficiency = Number(document.getElementById('edit-skill-proficiency').value || 90);
+                    skills[index].serial_order = Number(document.getElementById('edit-skill-serial').value || 1);
+                    skills[index].icon_class = document.getElementById('edit-skill-icon').value || 'code';
+
+                    localStorage.setItem('site_skills', JSON.stringify(skills));
+                    window.closeEditSkillModal();
+                    renderAdminSkills();
+                }
+            }
         });
     }
 
@@ -272,9 +463,14 @@ function renderAdminProjects() {
                 </div>
             </td>
             <td class="px-6 py-4 text-right">
-                <button onclick="deleteProject(${p.id})" class="p-2 rounded-xl bg-slate-800 hover:bg-red-900/40 text-red-400">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
+                <div class="flex items-center justify-end space-x-2">
+                    <button type="button" onclick="triggerStaticEditProject(${p.id})" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 transition-colors">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </button>
+                    <button type="button" onclick="deleteProject(${p.id})" class="p-2 rounded-xl bg-slate-800 hover:bg-red-900/40 text-red-400 transition-colors">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -308,9 +504,14 @@ function renderAdminSkills() {
             <td class="px-6 py-4 font-mono text-purple-400 font-bold">${s.proficiency}%</td>
             <td class="px-6 py-4 font-mono text-xs text-slate-400">${s.icon_class}</td>
             <td class="px-6 py-4 text-right">
-                <button onclick="deleteSkill(${s.id})" class="p-2 rounded-xl bg-slate-800 hover:bg-red-900/40 text-red-400">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
+                <div class="flex items-center justify-end space-x-2">
+                    <button type="button" onclick="triggerStaticEditSkill(${s.id})" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-400 transition-colors">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </button>
+                    <button type="button" onclick="deleteSkill(${s.id})" class="p-2 rounded-xl bg-slate-800 hover:bg-red-900/40 text-red-400 transition-colors">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
             </td>
         </tr>
     `).join('');

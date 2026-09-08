@@ -265,6 +265,110 @@
         </div>
     </div>
 
+    <!-- Edit Project Modal -->
+    <div id="edit-project-modal" class="modal-overlay hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="max-w-2xl w-full max-h-[90vh] flex flex-col bg-[#111622] rounded-3xl border border-slate-700/80 shadow-2xl overflow-hidden my-auto">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white">Edit Project Details</h3>
+                <button type="button" onclick="window.closeEditProjectModal()" class="text-slate-400 hover:text-white p-2">✕</button>
+            </div>
+            <form id="edit-project-form" class="p-6 space-y-4 overflow-y-auto">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Project Title</label>
+                        <input type="text" id="edit-proj-title" name="title" required class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Category</label>
+                        <input type="text" id="edit-proj-category" name="category" required class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Description</label>
+                    <textarea id="edit-proj-desc" name="description" required rows="3" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Serial Order #</label>
+                        <input type="number" id="edit-proj-serial" name="serial_order" min="1" required class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Price Tag</label>
+                        <input type="text" id="edit-proj-price" name="price" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Thumbnail Image URL</label>
+                    <input type="url" id="edit-proj-thumb-url" name="thumbnail_url" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Live Demo Link</label>
+                        <input type="url" id="edit-proj-live" name="live_link" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Source Code Link</label>
+                        <input type="url" id="edit-proj-source" name="source_link" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Tech Stack Tags</label>
+                    <input type="text" id="edit-proj-stack" name="tech_stack" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                </div>
+                <div class="flex space-x-6 pt-2">
+                    <label class="text-xs text-purple-300 font-bold flex items-center space-x-2">
+                        <input type="checkbox" id="edit-proj-featured" name="is_featured" value="1"> <span>Highlight in Featured Frame</span>
+                    </label>
+                    <label class="text-xs text-emerald-300 font-bold flex items-center space-x-2">
+                        <input type="checkbox" id="edit-proj-store" name="is_store_item" value="1"> <span>List in Projects Store</span>
+                    </label>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="window.closeEditProjectModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs">Update Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Skill Modal -->
+    <div id="edit-skill-modal" class="modal-overlay hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="max-w-md w-full bg-[#111622] p-6 rounded-3xl border border-slate-800 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-white">Edit Skill</h3>
+                <button type="button" onclick="window.closeEditSkillModal()" class="text-slate-400 p-2">✕</button>
+            </div>
+            <form id="edit-skill-form" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Skill Name</label>
+                    <input type="text" id="edit-skill-name" name="name" required class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Category</label>
+                    <input type="text" id="edit-skill-category" name="category" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Proficiency %</label>
+                        <input type="number" id="edit-skill-proficiency" name="proficiency" min="0" max="100" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Serial Order</label>
+                        <input type="number" id="edit-skill-serial" name="serial_order" min="1" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Icon Class</label>
+                    <input type="text" id="edit-skill-icon" name="icon_class" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                </div>
+                <div class="flex justify-end space-x-3 pt-3">
+                    <button type="button" onclick="window.closeEditSkillModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs">Cancel</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs">Update Skill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="static/js/main.js"></script>
     <script src="static/js/admin.js"></script>
 </body>
