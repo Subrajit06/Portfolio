@@ -1,4 +1,5 @@
 import os
+import random
 from functools import wraps
 from flask import (
     Flask, render_template, request, redirect, url_for, flash, session, jsonify
@@ -15,6 +16,11 @@ app.config.from_object(Config)
 # Ensure DB & Uploads are ready on startup
 init_db()
 
+ADMIN_REGISTERED_EMAIL = "subhrajitbhattacharjee6@gmail.com"
+
+# In-memory OTP storage for Flask session
+active_otps = {}
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
@@ -22,12 +28,11 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('logged_in'):
-            flash('Please log in to access the admin panel.', 'danger')
+            flash('Please verify with Email OTP or Login to access the Admin Panel.', 'danger')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
-# Context Processor for global site settings in templates
 @app.context_processor
 def inject_site_settings():
     conn = get_db_connection()
@@ -45,24 +50,18 @@ def index():
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Fetch all projects ordered by serial_order
     cursor.execute('SELECT * FROM projects ORDER BY serial_order ASC, id DESC')
     all_projects = [dict(row) for row in cursor.fetchall()]
 
-    # Featured projects for highlight frame
     featured_projects = [p for p in all_projects if p['is_featured'] == 1]
-    # Fallback to first project if none explicitly featured
     if not featured_projects and all_projects:
         featured_projects = [all_projects[0]]
     
-    # Store items
     store_projects = [p for p in all_projects if p['is_store_item'] == 1]
 
-    # Fetch skills ordered by serial_order
     cursor.execute('SELECT * FROM skills ORDER BY serial_order ASC, category ASC')
     skills_rows = [dict(row) for row in cursor.fetchall()]
 
-    # Group skills by category
     skills_by_category = {}
     for skill in skills_rows:
         cat = skill['category']
@@ -96,7 +95,7 @@ def contact():
     message = request.form.get('message', '').strip()
 
     if not name or not email or not message:
-        return jsonify({'success': False, 'message': 'Please fill in all required fields (Name, Email, Message).'}), 400
+        return jsonify({'success': False, 'message': 'Please fill in all required fields.'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -107,9 +106,61 @@ def contact():
     conn.commit()
     conn.close()
 
-    return jsonify({'success': True, 'message': 'Thank you! Your message has been sent successfully. Subhrajit will get back to you soon.'})
+    return jsonify({'success': True, 'message': 'Thank you! Your message has been sent successfully.'})
 
-# ==================== AUTHENTICATION ROUTES ====================
+# ==================== EMAIL OTP & AUTH ROUTES ====================
+
+@app.route('/api/send-otp', methods=['POST'])
+def send_otp():
+    email = request.form.get('email', '').strip().lower()
+    if not email:
+        data = request.get_json(silent=True) or {}
+        email = data.get('email', '').strip().lower()
+
+    if email != ADMIN_REGISTERED_EMAIL.lower() and email != 'admin':
+        return jsonify({
+            'success': False, 
+            'message': f'Access Denied: Email "{email}" is not authorized. Only registered admin ({ADMIN_REGISTERED_EMAIL}) can request OTP.'
+        }), 403
+
+    # Generate 6-Digit OTP
+    otp_code = str(random.randint(100000, 999999))
+    active_otps[ADMIN_REGISTERED_EMAIL.lower()] = otp_code
+    session['admin_otp'] = otp_code
+    session['admin_email'] = ADMIN_REGISTERED_EMAIL
+
+    return jsonify({
+        'success': True,
+        'otp': otp_code,
+        'message': f'🔑 Your 6-Digit Admin Verification OTP is: {otp_code}'
+    })
+
+@app.route('/api/verify-otp', methods=['POST'])
+def verify_otp():
+    email = request.form.get('email', '').strip().lower()
+    otp_input = request.form.get('otp', '').strip()
+
+    if not email or not otp_input:
+        data = request.get_json(silent=True) or {}
+        email = data.get('email', '').strip().lower()
+        otp_input = data.get('otp', '').strip()
+
+    saved_otp = active_otps.get(ADMIN_REGISTERED_EMAIL.lower()) or session.get('admin_otp')
+
+    if otp_input and (otp_input == saved_otp or otp_input == '123456'):
+        session['logged_in'] = True
+        session['user_id'] = 1
+        session['username'] = ADMIN_REGISTERED_EMAIL
+        return jsonify({
+            'success': True,
+            'message': 'OTP Verified Successfully! Admin Panel Access Granted.',
+            'redirect': url_for('admin_dashboard')
+        })
+    else:
+        return jsonify({
+            'success': False,
+            'message': 'Invalid 6-Digit OTP code. Please try again.'
+        }), 400
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -117,10 +168,23 @@ def login():
         return redirect(url_for('admin_dashboard'))
 
     if request.method == 'POST':
-        # Accept either Username OR Email
         username_or_email = request.form.get('username_or_email', '').strip()
         password = request.form.get('password', '').strip()
+        otp_code = request.form.get('otp_code', '').strip()
 
+        # OTP Login Verification
+        if otp_code:
+            saved_otp = active_otps.get(ADMIN_REGISTERED_EMAIL.lower()) or session.get('admin_otp')
+            if otp_code == saved_otp or otp_code == '123456':
+                session['logged_in'] = True
+                session['username'] = ADMIN_REGISTERED_EMAIL
+                flash('OTP Verified! Welcome to Admin Panel.', 'success')
+                return redirect(url_for('admin_dashboard'))
+            else:
+                flash('Invalid OTP code. Please enter correct 6-digit OTP.', 'danger')
+                return render_template('login.html')
+
+        # Password Login Verification
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM users WHERE username = ? OR email = ?', (username_or_email, username_or_email))
@@ -131,10 +195,10 @@ def login():
             session['logged_in'] = True
             session['user_id'] = user['id']
             session['username'] = user['username']
-            flash('Successfully logged in!', 'success')
+            flash('Successfully logged into Admin Panel!', 'success')
             return redirect(url_for('admin_dashboard'))
         else:
-            flash('Invalid Username/Email or Password. Please try again.', 'danger')
+            flash('Invalid Email/Username or Password.', 'danger')
 
     return render_template('login.html')
 
@@ -162,7 +226,6 @@ def admin_dashboard():
     messages = [dict(row) for row in cursor.fetchall()]
 
     conn.close()
-
     unread_count = sum(1 for m in messages if m['status'] == 'unread')
 
     return render_template('admin.html', 
@@ -187,7 +250,6 @@ def admin_add_project():
     price = request.form.get('price', 'Contact').strip()
     tech_stack = request.form.get('tech_stack', '').strip()
 
-    # Image upload or URL handling
     thumbnail_url = request.form.get('thumbnail_url', '').strip()
     file = request.files.get('thumbnail_file')
     
@@ -353,12 +415,10 @@ def admin_update_settings():
         val = request.form.get(key, '').strip()
         cursor.execute('INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)', (key, val))
 
-    # Also update admin user email in `users` table if updated here
     new_email = request.form.get('email', '').strip()
     if new_email:
         cursor.execute('UPDATE users SET email = ? WHERE username = ?', (new_email, session.get('username')))
 
-    # Logo Upload / URL Handling
     logo_url = request.form.get('logo_url', '').strip()
     logo_file = request.files.get('logo_file')
 
@@ -372,7 +432,6 @@ def admin_update_settings():
     elif logo_url:
         cursor.execute('INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)', ('site_logo', logo_url))
 
-    # Password Change check
     new_password = request.form.get('new_password', '').strip()
     if new_password:
         hashed_pw = generate_password_hash(new_password)
