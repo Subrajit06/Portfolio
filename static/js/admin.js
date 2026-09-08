@@ -1,21 +1,27 @@
-// Static Admin Management Logic with Strict Firebase Auth Guard
+// Static & Flask Admin Management Logic with Strict Firebase Auth Guard
 
 const ADMIN_EMAIL = "subhrajitbhattacharjee6@gmail.com";
+
+function getLoginUrl() {
+    const isStaticFile = window.location.protocol === 'file:' || window.location.pathname.endsWith('.html');
+    return isStaticFile ? 'login.html' : '/login';
+}
 
 function checkAdminSecurity() {
     const isAuth = localStorage.getItem('admin_auth') === 'true';
     const authUser = (localStorage.getItem('admin_auth_user') || '').toLowerCase();
 
     if (!isAuth || (authUser && authUser !== ADMIN_EMAIL.toLowerCase() && authUser !== 'admin')) {
+        const loginUrl = getLoginUrl();
         document.body.innerHTML = `
             <div style="background:#0a0d14; color:#ef4444; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; font-family:sans-serif; padding:2rem;">
                 <div style="font-size:4rem; margin-bottom:1rem;">🔒</div>
                 <h1 style="font-size:2rem; font-weight:bold; color:white; margin-bottom:0.5rem;">Access Denied</h1>
-                <p style="color:#94a3b8; max-width:480px; margin-bottom:2rem; line-height:1.5;">This Admin Panel is protected with Firebase Authentication. Only registered admin email (<strong>${ADMIN_EMAIL}</strong>) is authorized to log in.</p>
-                <a href="login.html" style="background:#3b82f6; color:white; padding:0.8rem 1.8rem; border-radius:0.75rem; text-decoration:none; font-weight:bold; font-size:0.9rem;">Go to Firebase Admin Login</a>
+                <p style="color:#94a3b8; max-width:480px; margin-bottom:2rem; line-height:1.5;">This Admin Panel is protected. Only registered admin email (<strong>${ADMIN_EMAIL}</strong>) is authorized to log in.</p>
+                <a href="${loginUrl}" style="background:#3b82f6; color:white; padding:0.8rem 1.8rem; border-radius:0.75rem; text-decoration:none; font-weight:bold; font-size:0.9rem;">Go to Admin Login Portal</a>
             </div>
         `;
-        setTimeout(() => window.location.href = 'login.html', 3000);
+        setTimeout(() => window.location.href = loginUrl, 2500);
         return false;
     }
     return true;
@@ -24,7 +30,7 @@ function checkAdminSecurity() {
 function logoutAdmin() {
     localStorage.removeItem('admin_auth');
     localStorage.removeItem('admin_auth_user');
-    window.location.href = 'login.html';
+    window.location.href = getLoginUrl();
 }
 
 function switchAdminTab(targetId) {
