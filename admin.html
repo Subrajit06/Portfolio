@@ -244,7 +244,19 @@
                     <input type="number" name="serial_order" value="1" placeholder="Serial Order #" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
                     <input type="text" name="price" value="Contact" placeholder="Price Tag" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
                 </div>
-                <input type="url" name="thumbnail" required placeholder="Thumbnail Image URL (https://...)" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                    <label class="block text-xs font-bold text-blue-400">Project Thumbnail Image</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1">Option A: Upload Image File (PNG, JPG, WebP)</label>
+                            <input type="file" id="add-proj-file" accept="image/*" class="block w-full text-xs text-slate-400 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1">Option B: Image URL</label>
+                            <input type="url" id="add-proj-url" name="thumbnail" placeholder="https://images.unsplash.com/..." class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs">
+                        </div>
+                    </div>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <input type="url" name="live_link" placeholder="Live Demo Link" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
                     <input type="url" name="source_link" placeholder="Source Code Link" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
@@ -315,9 +327,18 @@
                         <input type="text" id="edit-proj-price" name="price" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Thumbnail Image URL</label>
-                    <input type="url" id="edit-proj-thumb-url" name="thumbnail_url" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                    <label class="block text-xs font-bold text-purple-400">Update Project Thumbnail Image</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1">Option A: Upload New Image File</label>
+                            <input type="file" id="edit-proj-file" accept="image/*" class="block w-full text-xs text-slate-400 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-500 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1">Option B: Image URL</label>
+                            <input type="url" id="edit-proj-thumb-url" name="thumbnail_url" placeholder="https://..." class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs">
+                        </div>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
