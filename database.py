@@ -104,7 +104,7 @@ def init_db():
         'owner_name': 'Subhrajit Bhattacharjee',
         'owner_role': 'Full-Stack Software Engineer & Creative UI Designer',
         'owner_bio': 'Building high-performance web applications, scalable APIs, and sleek digital experiences. Specializing in modern Python, JavaScript, and custom cloud solutions.',
-        'email': 'subhrajitbhattacharjee@gmail.com',
+        'email': 'subhrajitbhattacharjee6@gmail.com',
         'phone': '+91 6009916591',
         'location': 'India',
         'site_logo': '',  # Custom Logo Path or URL

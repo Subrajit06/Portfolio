@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects Store & Source Code | Subhrajit Bhattacharjee</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/css/custom.css">
+</head>
+<body class="bg-[#0a0d14] text-slate-100 antialiased min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div id="site-logo-container">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform">
+                            SB
+                        </div>
+                    </div>
+                    <div>
+                        <span id="header-owner-name" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                            Subhrajit Bhattacharjee
+                        </span>
+                        <span class="block text-xs text-blue-400 font-medium">Portfolio & Store</span>
+                    </div>
+                </a>
+
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html#hero" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Home</a>
+                    <a href="index.html#featured" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Highlights</a>
+                    <a href="index.html#skills" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Skills</a>
+                    <a href="index.html#projects" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Projects</a>
+                    <a href="store.html" class="text-sm font-medium text-blue-400 flex items-center space-x-1">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                        <span>Store</span>
+                    </a>
+                    <a href="index.html#contact" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Contact</a>
+                </nav>
+
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="admin.html" class="px-4 py-2 text-xs font-semibold rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30">Admin Panel</a>
+                    <a href="index.html#contact" class="px-5 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white">Get In Touch</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-24 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="glass-panel p-8 sm:p-12 rounded-3xl mb-12 border border-slate-800 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+                
+                <div class="max-w-3xl space-y-4 relative z-10">
+                    <span class="px-3.5 py-1 text-xs font-bold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                        Digital Marketplace
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-white">
+                        Projects Store & Source Code Catalogue
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Explore ready-to-deploy web templates, full-stack microservices, SaaS dashboards, and mobile app source codes built by Subhrajit. All controllable from the Admin Panel.
+                    </p>
+                </div>
+            </div>
+
+            <div id="store-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-800/80 bg-[#07090e] py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500">
+            <p>&copy; 2026 Subhrajit Bhattacharjee. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="static/js/main.js"></script>
+</body>
+</html>

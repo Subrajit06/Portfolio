@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subhrajit Bhattacharjee | Professional Portfolio & Store</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/css/custom.css">
+</head>
+<body class="bg-[#0a0d14] text-slate-100 antialiased min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo / Brand -->
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div id="site-logo-container">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform">
+                            SB
+                        </div>
+                    </div>
+                    <div>
+                        <span id="header-owner-name" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                            Subhrajit Bhattacharjee
+                        </span>
+                        <span class="block text-xs text-blue-400 font-medium">Portfolio & Store</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#hero" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Home</a>
+                    <a href="#featured" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Highlights</a>
+                    <a href="#skills" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Skills</a>
+                    <a href="#projects" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Projects</a>
+                    <a href="store.html" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors flex items-center space-x-1">
+                        <i data-lucide="shopping-bag" class="w-4 h-4 text-blue-400"></i>
+                        <span>Store</span>
+                    </a>
+                    <a href="#contact" class="text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors">Contact</a>
+                </nav>
+
+                <!-- Action Buttons & Admin Portal Link -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="admin.html" class="px-4 py-2 text-xs font-semibold rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600/30 transition-all flex items-center space-x-2">
+                        <i data-lucide="shield" class="w-4 h-4"></i>
+                        <span>Admin Panel</span>
+                    </a>
+                    <a href="#contact" class="px-5 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:scale-105 transition-all">
+                        Get In Touch
+                    </a>
+                </div>
+
+                <!-- Mobile Hamburger Button -->
+                <div class="md:hidden flex items-center space-x-3">
+                    <button id="mobile-menu-btn" class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 hover:text-white">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Navigation -->
+        <div id="mobile-menu" class="hidden md:hidden glass-panel border-t border-slate-800/80 px-4 pt-4 pb-6 space-y-3">
+            <a href="#hero" class="block py-2 text-base font-medium text-slate-300 hover:text-blue-400">Home</a>
+            <a href="#featured" class="block py-2 text-base font-medium text-slate-300 hover:text-blue-400">Highlights</a>
+            <a href="#skills" class="block py-2 text-base font-medium text-slate-300 hover:text-blue-400">Skills</a>
+            <a href="#projects" class="block py-2 text-base font-medium text-slate-300 hover:text-blue-400">Projects</a>
+            <a href="store.html" class="block py-2 text-base font-medium text-blue-400 flex items-center space-x-2">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                <span>Projects Store</span>
+            </a>
+            <a href="#contact" class="block py-2 text-base font-medium text-slate-300 hover:text-blue-400">Contact</a>
+            
+            <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+                <a href="admin.html" class="px-4 py-2 text-xs font-semibold rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30">Admin Panel</a>
+                <a href="#contact" class="px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white">Contact Me</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="flex-grow pt-20">
+        
+        <!-- Hero Section -->
+        <section id="hero" class="relative pt-12 pb-20 md:py-28 overflow-hidden">
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+            <div class="absolute top-1/3 right-10 w-[350px] h-[350px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full glass-panel border border-blue-500/30 text-blue-400 text-xs font-semibold tracking-wide uppercase">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                            <span>Available for Projects & Freelance</span>
+                        </div>
+
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-none">
+                            Hi, I'm <span id="hero-name" class="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">Subhrajit Bhattacharjee</span>
+                        </h1>
+
+                        <p id="hero-role" class="text-xl font-semibold text-slate-300">
+                            Full-Stack Software Engineer & Creative UI Designer
+                        </p>
+
+                        <p id="hero-bio" class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                            Building high-performance web applications, scalable APIs, and sleek digital experiences. Specializing in modern Python, JavaScript, and custom cloud solutions.
+                        </p>
+
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+                            <a href="#projects" class="px-7 py-3.5 text-sm font-bold rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all flex items-center space-x-2">
+                                <span>Explore Projects</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </a>
+                            <a href="#contact" class="px-7 py-3.5 text-sm font-bold rounded-2xl glass-card text-slate-200 hover:text-white border border-slate-700/80 hover:border-slate-500 transition-all flex items-center space-x-2">
+                                <i data-lucide="message-square" class="w-4 h-4 text-blue-400"></i>
+                                <span>Hire / Contact Me</span>
+                            </a>
+                        </div>
+
+                        <div class="pt-6 border-t border-slate-800/80 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-400">
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="mail" class="w-4 h-4 text-blue-400"></i>
+                                <span id="hero-email">subhrajitbhattacharjee@gmail.com</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="phone" class="w-4 h-4 text-emerald-400"></i>
+                                <span id="hero-phone">+91 6009916591</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-purple-400"></i>
+                                <span>100% Admin Controlled</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5">
+                        <div class="glass-card p-6 sm:p-8 rounded-3xl relative">
+                            <div class="flex items-center justify-between mb-6 border-b border-slate-800 pb-4">
+                                <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Developer Profile</span>
+                                <span class="px-2.5 py-1 text-[10px] font-bold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Online</span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="p-2.5 rounded-xl bg-blue-500/10 text-blue-400">
+                                            <i data-lucide="folder-code" class="w-5 h-5"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-white">Active Projects</div>
+                                            <div id="stat-project-count" class="text-xs text-slate-400">3 Projects Listed</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-mono text-blue-400 font-bold">Serial Ordered</span>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="p-2.5 rounded-xl bg-purple-500/10 text-purple-400">
+                                            <i data-lucide="cpu" class="w-5 h-5"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-white">Technical Skills</div>
+                                            <div class="text-xs text-slate-400">Full-Stack & DevOps</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-mono text-purple-400 font-bold">Verified</span>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
+                                            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-white">Projects Store</div>
+                                            <div id="stat-store-count" class="text-xs text-slate-400">Ready Source Items</div>
+                                        </div>
+                                    </div>
+                                    <a href="store.html" class="text-xs font-bold text-emerald-400 hover:underline">View Store &rarr;</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Project Showcase Frame Section -->
+        <section id="featured" class="py-16 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <span class="text-xs font-bold uppercase tracking-widest text-blue-400">Spotlight</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 text-white">Featured Highlight Showcase</h2>
+                    <p class="text-slate-400 text-sm sm:text-base mt-2">
+                        Hand-picked flagship projects highlighted directly from the Admin Panel.
+                    </p>
+                </div>
+
+                <div id="featured-frame-container"></div>
+                <div id="featured-thumbnails-container" class="flex items-center justify-center gap-4 overflow-x-auto pb-4 mt-6"></div>
+
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-16 bg-[#070a10] border-y border-slate-800/80 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-purple-400">Expertise</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 text-white">Skills & Competencies</h2>
+                        <p class="text-slate-400 text-sm sm:text-base mt-2 max-w-xl">
+                            Fully manageable from the Admin Panel. Skills organized by domain with proficiency metrics.
+                        </p>
+                    </div>
+                    <a href="admin.html#skills" class="mt-4 md:mt-0 inline-flex items-center space-x-2 text-xs font-bold text-purple-400 hover:underline">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Manage Skills in Admin</span>
+                    </a>
+                </div>
+
+                <div id="skills-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+            </div>
+        </section>
+
+        <!-- Serial-wise Projects List Section -->
+        <section id="projects" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <span class="text-xs font-bold uppercase tracking-widest text-blue-400">Portfolio</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 text-white">Serial-Wise Projects List</h2>
+                    <p class="text-slate-400 text-sm sm:text-base mt-2">
+                        Projects are listed in exact order set in the Admin Panel (#1, #2, #3...).
+                    </p>
+                </div>
+
+                <div id="projects-filter-container" class="flex items-center justify-center flex-wrap gap-3 mb-10"></div>
+
+                <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+            </div>
+        </section>
+
+        <!-- Client Contact Section -->
+        <section id="contact" class="py-20 bg-[#070a10] border-t border-slate-800/80 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                    
+                    <div class="lg:col-span-5 space-y-8">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-blue-400">Get In Touch</span>
+                            <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 text-white">Let's Build Something Great Together</h2>
+                            <p class="text-slate-400 text-sm mt-3 leading-relaxed">
+                                Have a project requirement or looking for freelance full-stack development? Drop a message below and I will respond promptly.
+                            </p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="glass-card p-5 rounded-2xl flex items-center space-x-4 border border-slate-800">
+                                <div class="p-3.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                    <i data-lucide="mail" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 font-medium">Direct Email</div>
+                                    <a id="contact-card-email" href="mailto:subhrajitbhattacharjee@gmail.com" class="text-sm font-bold text-white hover:text-blue-400">
+                                        subhrajitbhattacharjee@gmail.com
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="glass-card p-5 rounded-2xl flex items-center space-x-4 border border-slate-800">
+                                <div class="p-3.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    <i data-lucide="phone-call" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 font-medium">Phone / WhatsApp</div>
+                                    <a id="contact-card-phone" href="tel:6009916591" class="text-sm font-bold text-white hover:text-emerald-400">
+                                        +91 6009916591
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7">
+                        <div class="glass-card p-8 rounded-3xl border border-slate-800">
+                            <h3 class="text-2xl font-bold text-white mb-6">Send Me a Message</h3>
+                            
+                            <div id="contact-alert" class="hidden mb-6"></div>
+
+                            <form id="contact-form" class="space-y-5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-300 mb-2">Your Name *</label>
+                                        <input type="text" name="name" required placeholder="John Doe" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-300 mb-2">Your Email *</label>
+                                        <input type="email" name="email" required placeholder="john@example.com" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-300 mb-2">Phone Number</label>
+                                        <input type="text" name="phone" placeholder="+91..." class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-300 mb-2">Subject / Topic</label>
+                                        <input type="text" name="subject" placeholder="Project Inquiry / Hiring" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-2">Message *</label>
+                                    <textarea name="message" rows="5" required placeholder="Describe your project details or requirement..." class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm"></textarea>
+                                </div>
+
+                                <button type="submit" class="w-full py-4 text-sm font-bold rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.01] transition-all flex items-center justify-center space-x-2">
+                                    <i data-lucide="send" class="w-4 h-4"></i>
+                                    <span>Send Message Now</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-[#07090e] py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-2 space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div id="footer-logo-container">
+                            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                                SB
+                            </div>
+                        </div>
+                        <span id="footer-owner-name" class="font-bold text-white text-lg">Subhrajit Bhattacharjee</span>
+                    </div>
+                    <p id="footer-owner-bio" class="text-slate-400 text-sm max-w-md">
+                        Full-Stack Software Engineer building modern Web Apps, Mobile Platforms & Digital Products.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#featured" class="hover:text-blue-400 transition-colors">Highlights</a></li>
+                        <li><a href="#skills" class="hover:text-blue-400 transition-colors">Skills</a></li>
+                        <li><a href="#projects" class="hover:text-blue-400 transition-colors">Projects</a></li>
+                        <li><a href="store.html" class="hover:text-blue-400 transition-colors">Projects Store</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Contact Info</h4>
+                    <ul class="space-y-3 text-sm text-slate-400">
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="mail" class="w-4 h-4 text-blue-400"></i>
+                            <a id="footer-email" href="mailto:subhrajitbhattacharjee@gmail.com" class="hover:text-white">
+                                subhrajitbhattacharjee@gmail.com
+                            </a>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="phone" class="w-4 h-4 text-blue-400"></i>
+                            <a id="footer-phone" href="tel:6009916591" class="hover:text-white">
+                                +91 6009916591
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-12 pt-8 border-t border-slate-800/60 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500">
+                <p>&copy; 2026 Subhrajit Bhattacharjee. All rights reserved.</p>
+                <div class="flex items-center space-x-4 mt-4 md:mt-0">
+                    <a href="admin.html" class="hover:text-slate-300">Admin Control Panel</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shared Static Client Store Script -->
+    <script src="static/js/main.js"></script>
+</body>
+</html>
