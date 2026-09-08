@@ -70,8 +70,27 @@
 
     <script src="static/js/main.js"></script>
     <script>
+        const MAX_FAILED_ATTEMPTS = 5;
+        const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+
+        function checkLockout() {
+            const lockoutUntil = Number(localStorage.getItem('admin_lockout_until') || 0);
+            const alertBox = document.getElementById('auth-alert');
+            if (lockoutUntil && Date.now() < lockoutUntil) {
+                const remainingSec = Math.ceil((lockoutUntil - Date.now()) / 1000);
+                alertBox.className = 'p-3.5 rounded-xl text-xs bg-red-500/10 border-red-500/20 text-red-400 block';
+                alertBox.textContent = `⛔ Security Lockout: Too many failed password attempts. Try again in ${remainingSec} seconds.`;
+                return true;
+            }
+            return false;
+        }
+
+        document.addEventListener('DOMContentLoaded', checkLockout);
+
         document.getElementById('simple-pass-form').addEventListener('submit', (e) => {
             e.preventDefault();
+            if (checkLockout()) return;
+
             const user = document.getElementById('pass-user').value.trim().toLowerCase();
             const pass = document.getElementById('pass-val').value.trim();
             const alertBox = document.getElementById('auth-alert');
@@ -80,19 +99,36 @@
             const targetEmail = "subhrajitbhattacharjee6@gmail.com";
 
             if ((user === 'admin' || user === targetEmail.toLowerCase()) && (pass === customPass || pass === 'admin123')) {
+                // Clear failed attempts & lockout
+                localStorage.removeItem('admin_failed_attempts');
+                localStorage.removeItem('admin_lockout_until');
+
+                // Set Auth session flags
                 localStorage.setItem('admin_auth', 'true');
                 localStorage.setItem('admin_auth_user', targetEmail);
+                localStorage.setItem('admin_auth_time', String(Date.now()));
 
                 alertBox.className = 'p-3.5 rounded-xl text-xs bg-emerald-500/10 border-emerald-500/20 text-emerald-400 block';
-                alertBox.textContent = '✅ Password Verified! Opening Admin Panel...';
+                alertBox.textContent = '✅ Security Password Verified! Session Started. Opening Admin Panel...';
 
                 setTimeout(() => {
                     const isStatic = window.location.protocol === 'file:' || window.location.pathname.endsWith('.html');
                     window.location.href = isStatic ? 'admin.html' : '/admin';
                 }, 500);
             } else {
-                alertBox.className = 'p-3.5 rounded-xl text-xs bg-red-500/10 border-red-500/20 text-red-400 block';
-                alertBox.textContent = 'Invalid Password or Email. Please check credentials.';
+                let failedCount = Number(localStorage.getItem('admin_failed_attempts') || 0) + 1;
+                localStorage.setItem('admin_failed_attempts', String(failedCount));
+
+                if (failedCount >= MAX_FAILED_ATTEMPTS) {
+                    const lockoutUntil = Date.now() + LOCKOUT_DURATION_MS;
+                    localStorage.setItem('admin_lockout_until', String(lockoutUntil));
+                    alertBox.className = 'p-3.5 rounded-xl text-xs bg-red-500/10 border-red-500/20 text-red-400 block';
+                    alertBox.textContent = '⛔ Account Locked! 5 failed attempts detected. Login disabled for 5 minutes.';
+                } else {
+                    const remaining = MAX_FAILED_ATTEMPTS - failedCount;
+                    alertBox.className = 'p-3.5 rounded-xl text-xs bg-red-500/10 border-red-500/20 text-red-400 block';
+                    alertBox.textContent = `Invalid Password or Username. (${remaining} attempts remaining before security lockout).`;
+                }
             }
         });
     </script>

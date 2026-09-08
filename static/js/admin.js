@@ -1,4 +1,4 @@
-// Admin Management Logic - Clean Simple Password Protection, Working Modals & Edit Functions
+// Admin Management Logic - Clean Simple Password Protection, Working Modals, Security Timeout & Logo Upload
 
 const ADMIN_EMAIL = "subhrajitbhattacharjee6@gmail.com";
 
@@ -123,6 +123,18 @@ function checkAdminSecurity() {
     }
 
     const isAuth = localStorage.getItem('admin_auth') === 'true';
+    const authTime = Number(localStorage.getItem('admin_auth_time') || 0);
+    const SESSION_TIMEOUT_MS = 4 * 60 * 60 * 1000; // 4 Hours Session Timeout
+
+    if (isAuth && authTime && (Date.now() - authTime > SESSION_TIMEOUT_MS)) {
+        localStorage.removeItem('admin_auth');
+        localStorage.removeItem('admin_auth_user');
+        localStorage.removeItem('admin_auth_time');
+        alert('🔒 Security Alert: Admin Session Expired due to inactivity. Please log in again.');
+        window.location.href = getLoginUrl();
+        return false;
+    }
+
     if (isAuth) {
         return true;
     }
@@ -136,8 +148,8 @@ function checkAdminSecurity() {
                     🔒
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-white">Admin Password Required</h2>
-                    <p class="text-slate-400 text-xs mt-2">Log in with your admin password to access the control panel.</p>
+                    <h2 class="text-2xl font-bold text-white">Security Password Required</h2>
+                    <p class="text-slate-400 text-xs mt-2">Access Denied. You must log in with your verified admin password to access the control panel.</p>
                 </div>
                 <a href="${getLoginUrl()}" class="inline-block w-full py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl shadow-purple-500/25 hover:scale-[1.02] transition-all">
                     Go to Admin Password Login
@@ -151,6 +163,7 @@ function checkAdminSecurity() {
 function logoutAdmin() {
     localStorage.removeItem('admin_auth');
     localStorage.removeItem('admin_auth_user');
+    localStorage.removeItem('admin_auth_time');
     const isFlaskServer = window.location.port === '5000' || window.location.pathname === '/admin';
     window.location.href = isFlaskServer ? '/logout' : getLoginUrl();
 }
@@ -414,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Static Settings Form Handler
+    // Settings Form Handler (Logo Image File Upload & Password)
     const settingsForm = document.getElementById('admin-settings-form');
     if (settingsForm) {
         settingsForm.addEventListener('submit', (e) => {
@@ -426,7 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
             settings.owner_bio = document.getElementById('setting-owner-bio').value;
             settings.email = document.getElementById('setting-email').value;
             settings.phone = document.getElementById('setting-phone').value;
-            settings.site_logo = document.getElementById('setting-logo-url').value;
 
             // Password change option
             const newPass = document.getElementById('setting-new-pass')?.value;
@@ -434,8 +446,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('admin_custom_password', newPass);
             }
 
-            localStorage.setItem('site_settings', JSON.stringify(settings));
-            alert('Settings, Password & Logo saved successfully!');
+            const logoFileInput = document.getElementById('setting-logo-file');
+            const logoUrlInput = document.getElementById('setting-logo-url');
+
+            const saveSettings = () => {
+                localStorage.setItem('site_settings', JSON.stringify(settings));
+                fillAdminSettings();
+                if (typeof renderSettings === 'function') renderSettings(settings);
+                alert('🔒 Settings, Admin Password & Logo updated successfully!');
+            };
+
+            if (logoFileInput && logoFileInput.files && logoFileInput.files[0]) {
+                const file = logoFileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    settings.site_logo = evt.target.result;
+                    saveSettings();
+                };
+                reader.readAsDataURL(file);
+            } else if (logoUrlInput && logoUrlInput.value.trim()) {
+                settings.site_logo = logoUrlInput.value.trim();
+                saveSettings();
+            } else {
+                saveSettings();
+            }
         });
     }
 });
@@ -583,6 +617,24 @@ function fillAdminSettings() {
     const phoneEl = document.getElementById('setting-phone');
     if (phoneEl) phoneEl.value = settings.phone;
 
-    const logoEl = document.getElementById('setting-logo-url');
-    if (logoEl) logoEl.value = settings.site_logo || '';
+    const logoUrlEl = document.getElementById('setting-logo-url');
+    if (logoUrlEl) logoUrlEl.value = settings.site_logo || '';
+
+    // Logo Preview & Status Badge
+    const logoPreviewImg = document.getElementById('admin-logo-preview-img');
+    const logoPreviewBox = document.getElementById('admin-logo-preview-box');
+    const logoStatus = document.getElementById('admin-logo-status');
+
+    if (settings.site_logo && logoPreviewImg) {
+        logoPreviewImg.src = settings.site_logo;
+        if (logoPreviewBox) logoPreviewBox.classList.remove('hidden');
+        if (logoStatus) {
+            logoStatus.innerHTML = `<span class="px-2.5 py-0.5 text-[10px] font-bold rounded-lg bg-green-500/10 text-green-400 border border-green-500/20">Custom Logo Active</span>`;
+        }
+    } else {
+        if (logoPreviewBox) logoPreviewBox.classList.add('hidden');
+        if (logoStatus) {
+            logoStatus.innerHTML = `<span class="px-2.5 py-0.5 text-[10px] font-bold rounded-lg bg-slate-800 text-slate-400">Default Badge Active</span>`;
+        }
+    }
 }
