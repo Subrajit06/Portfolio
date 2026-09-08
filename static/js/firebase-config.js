@@ -1,9 +1,9 @@
 // Firebase Configuration & Authentication Module for Subhrajit Portfolio
 
-// Registered Admin Email
-const ADMIN_EMAIL = "subhrajitbhattacharjee@gmail.com";
+// Registered Admin Email (Updated Correct Email)
+const ADMIN_EMAIL = "subhrajitbhattacharjee6@gmail.com";
 
-// Firebase App Configuration (Replace with your Firebase Console keys if desired)
+// Firebase App Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyD-PortfolioSecureAdminKey2026Example",
     authDomain: "subhrajit-portfolio.firebaseapp.com",

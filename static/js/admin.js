@@ -1,6 +1,6 @@
 // Static Admin Management Logic with Strict Firebase Auth Guard
 
-const ADMIN_EMAIL = "subhrajitbhattacharjee@gmail.com";
+const ADMIN_EMAIL = "subhrajitbhattacharjee6@gmail.com";
 
 function checkAdminSecurity() {
     const isAuth = localStorage.getItem('admin_auth') === 'true';
@@ -49,18 +49,15 @@ function switchAdminTab(targetId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Perform Strict Security Check
     if (!checkAdminSecurity()) return;
 
     if (window.lucide) lucide.createIcons();
 
-    // Render Admin Data
     renderAdminProjects();
     renderAdminSkills();
     renderAdminMessages();
     fillAdminSettings();
 
-    // Static Add Project Form Handler
     const addProjForm = document.getElementById('static-add-project-form');
     if (addProjForm) {
         addProjForm.addEventListener('submit', (e) => {
@@ -91,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Static Add Skill Form Handler
     const addSkillForm = document.getElementById('static-add-skill-form');
     if (addSkillForm) {
         addSkillForm.addEventListener('submit', (e) => {
@@ -116,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Static Settings Form Handler
     const settingsForm = document.getElementById('admin-settings-form');
     if (settingsForm) {
         settingsForm.addEventListener('submit', (e) => {

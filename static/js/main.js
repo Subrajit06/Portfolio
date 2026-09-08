@@ -4,7 +4,7 @@ const DEFAULT_SETTINGS = {
     owner_name: 'Subhrajit Bhattacharjee',
     owner_role: 'Full-Stack Software Engineer & Creative UI Designer',
     owner_bio: 'Building high-performance web applications, scalable APIs, and sleek digital experiences. Specializing in modern Python, JavaScript, and custom cloud solutions.',
-    email: 'subhrajitbhattacharjee@gmail.com',
+    email: 'subhrajitbhattacharjee6@gmail.com',
     phone: '+91 6009916591',
     site_logo: ''
 };
@@ -16,7 +16,7 @@ const DEFAULT_PROJECTS = [
         description: 'An enterprise-grade e-commerce application with smart product recommendations, serial ordering, real-time inventory management, and an interactive admin dashboard.',
         category: 'Full-Stack Web App',
         thumbnail: 'https://images.unsplash.com/photo-1557821552-17105176677c?auto=format&fit=crop&w=1200&q=80',
-        source_link: 'https://github.com',
+        source_link: 'https://github.com/Subrajit06',
         live_link: 'https://example.com/demo1',
         serial_order: 1,
         is_featured: 1,
@@ -30,7 +30,7 @@ const DEFAULT_PROJECTS = [
         description: 'Real-time data visualization platform built for SaaS analytics with live telemetry tracking, client access management, and dark glassmorphic UI widgets.',
         category: 'SaaS / Dashboard',
         thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
-        source_link: 'https://github.com',
+        source_link: 'https://github.com/Subrajit06',
         live_link: 'https://example.com/demo2',
         serial_order: 2,
         is_featured: 1,
@@ -44,7 +44,7 @@ const DEFAULT_PROJECTS = [
         description: 'Sleek mobile app built for showcasing creative agency portfolios, client interaction forms, push notifications, and store product digital downloads.',
         category: 'Mobile App',
         thumbnail: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1200&q=80',
-        source_link: 'https://github.com',
+        source_link: 'https://github.com/Subrajit06',
         live_link: 'https://example.com/demo3',
         serial_order: 3,
         is_featured: 0,
@@ -82,7 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const projects = getStoredData('site_projects', DEFAULT_PROJECTS);
     const skills = getStoredData('site_skills', DEFAULT_SKILLS);
 
-    // Initialize Lucide Icons
+    // Force update email if old email was present
+    if (settings.email === 'subhrajitbhattacharjee@gmail.com') {
+        settings.email = 'subhrajitbhattacharjee6@gmail.com';
+        localStorage.setItem('site_settings', JSON.stringify(settings));
+    }
+
     if (window.lucide) lucide.createIcons();
 
     // Mobile Menu Toggle
@@ -92,22 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
     }
 
-    // Render Settings Data across elements
     renderSettings(settings);
-
-    // Render Featured Showcase Frame
     renderFeaturedFrame(projects);
-
-    // Render Skills Section
     renderSkills(skills);
-
-    // Render Serial-wise Projects
     renderProjects(projects);
-
-    // Render Store Items
     renderStore(projects);
 
-    // Handle Contact Form Submission
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
         contactForm.addEventListener('submit', (e) => {
@@ -172,7 +167,6 @@ function renderSettings(s) {
         }
     });
 
-    // Render Logo if present
     if (s.site_logo) {
         const logoContainers = ['site-logo-container', 'footer-logo-container'];
         logoContainers.forEach(id => {
@@ -292,7 +286,6 @@ function renderProjects(projects) {
     const filterBox = document.getElementById('projects-filter-container');
     if (!grid) return;
 
-    // Sort projects by serial_order
     const sorted = [...projects].sort((a, b) => Number(a.serial_order) - Number(b.serial_order));
 
     const pCount = document.getElementById('stat-project-count');
