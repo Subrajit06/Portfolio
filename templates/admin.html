@@ -1,0 +1,720 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Admin Header Banner -->
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl mb-8 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <div class="w-14 h-14 rounded-2xl bg-purple-600/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-2xl font-bold">
+                    <i data-lucide="layout-dashboard" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white">Admin Control Panel</h1>
+                    <p class="text-slate-400 text-xs sm:text-sm">Manage website logo, projects, serial ordering, featured highlights frame, skills & client inbox.</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <a href="{{ url_for('index') }}" target="_blank" class="px-4 py-2.5 text-xs font-bold rounded-xl glass-card text-slate-300 hover:text-white border border-slate-700 flex items-center space-x-1.5">
+                    <i data-lucide="eye" class="w-4 h-4 text-blue-400"></i>
+                    <span>Preview Live Site</span>
+                </a>
+                <a href="{{ url_for('logout') }}" class="px-4 py-2.5 text-xs font-bold rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors flex items-center space-x-1.5">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs Bar -->
+        <div class="flex items-center space-x-2 border-b border-slate-800 pb-4 mb-8 overflow-x-auto">
+            <a href="#projects" class="admin-nav-link px-5 py-2.5 text-xs font-bold rounded-xl border border-transparent transition-all flex items-center space-x-2">
+                <i data-lucide="folder" class="w-4 h-4"></i>
+                <span>Projects ({{ projects|length }})</span>
+            </a>
+            <a href="#skills" class="admin-nav-link px-5 py-2.5 text-xs font-bold rounded-xl border border-transparent transition-all flex items-center space-x-2">
+                <i data-lucide="cpu" class="w-4 h-4"></i>
+                <span>Skills ({{ skills|length }})</span>
+            </a>
+            <a href="#messages" class="admin-nav-link px-5 py-2.5 text-xs font-bold rounded-xl border border-transparent transition-all flex items-center space-x-2 relative">
+                <i data-lucide="inbox" class="w-4 h-4"></i>
+                <span>Client Inbox ({{ messages|length }})</span>
+                {% if unread_count > 0 %}
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
+                {% endif %}
+            </a>
+            <a href="#settings" class="admin-nav-link px-5 py-2.5 text-xs font-bold rounded-xl border border-transparent transition-all flex items-center space-x-2">
+                <i data-lucide="settings" class="w-4 h-4"></i>
+                <span>Site Settings & Logo</span>
+            </a>
+        </div>
+
+        <!-- TAB 1: PROJECTS MANAGEMENT -->
+        <div id="tab-projects" class="admin-tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Projects Management</h2>
+                    <p class="text-xs text-slate-400">Control serial order, thumbnails, links, highlight frame & store flags.</p>
+                </div>
+                <button id="open-add-project-btn" class="px-5 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:scale-105 transition-all flex items-center space-x-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>Add New Project</span>
+                </button>
+            </div>
+
+            <!-- Projects Table -->
+            <div class="glass-card rounded-3xl overflow-hidden border border-slate-800">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-900/90 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="px-6 py-4">Serial #</th>
+                                <th class="px-6 py-4">Thumbnail</th>
+                                <th class="px-6 py-4">Project Details</th>
+                                <th class="px-6 py-4">Category</th>
+                                <th class="px-6 py-4">Status / Flags</th>
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60">
+                            {% for p in projects %}
+                                <tr class="hover:bg-slate-900/40 transition-colors">
+                                    <td class="px-6 py-4 font-mono font-bold text-blue-400">
+                                        #{{ p.serial_order }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <img src="{{ p.thumbnail }}" alt="" class="w-16 h-12 object-cover rounded-xl border border-slate-700">
+                                    </td>
+                                    <td class="px-6 py-4 space-y-1">
+                                        <div class="font-bold text-white">{{ p.title }}</div>
+                                        <div class="text-xs text-slate-400 line-clamp-1 max-w-xs">{{ p.description }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-xs font-semibold text-slate-300">
+                                        {{ p.category }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-wrap gap-1.5">
+                                            {% if p.is_featured %}
+                                                <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">★ Highlight Frame</span>
+                                            {% endif %}
+                                            {% if p.is_store_item %}
+                                                <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Store Item ({{ p.price }})</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end space-x-2">
+                                            <button class="edit-project-btn p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 transition-colors"
+                                                    data-id="{{ p.id }}"
+                                                    data-title="{{ p.title }}"
+                                                    data-desc="{{ p.description }}"
+                                                    data-category="{{ p.category }}"
+                                                    data-thumb="{{ p.thumbnail }}"
+                                                    data-live="{{ p.live_link }}"
+                                                    data-source="{{ p.source_link }}"
+                                                    data-serial="{{ p.serial_order }}"
+                                                    data-featured="{{ p.is_featured }}"
+                                                    data-store="{{ p.is_store_item }}"
+                                                    data-price="{{ p.price }}"
+                                                    data-stack="{{ p.tech_stack }}">
+                                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                            </button>
+                                            <form action="{{ url_for('admin_delete_project', id=p.id) }}" method="POST" onsubmit="return confirm('Delete this project?')">
+                                                <button type="submit" class="p-2 rounded-xl bg-slate-800 hover:bg-red-900/40 text-red-400 transition-colors">
+                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="px-6 py-8 text-center text-slate-500">No projects found. Add your first project!</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: SKILLS MANAGEMENT -->
+        <div id="tab-skills" class="admin-tab-content space-y-6 hidden">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Skills Management</h2>
+                    <p class="text-xs text-slate-400">Add, edit, or categorize technical skills shown on your portfolio.</p>
+                </div>
+                <button id="open-add-skill-btn" class="px-5 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/20 hover:scale-105 transition-all flex items-center space-x-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>Add New Skill</span>
+                </button>
+            </div>
+
+            <!-- Skills Table -->
+            <div class="glass-card rounded-3xl overflow-hidden border border-slate-800">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-900/90 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="px-6 py-4">Serial #</th>
+                                <th class="px-6 py-4">Skill Name</th>
+                                <th class="px-6 py-4">Category</th>
+                                <th class="px-6 py-4">Proficiency %</th>
+                                <th class="px-6 py-4">Icon Class</th>
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60">
+                            {% for s in skills %}
+                                <tr class="hover:bg-slate-900/40 transition-colors">
+                                    <td class="px-6 py-4 font-mono font-bold text-purple-400">#{{ s.serial_order }}</td>
+                                    <td class="px-6 py-4 font-bold text-white flex items-center space-x-2">
+                                        <i data-lucide="{{ s.icon_class or 'code' }}" class="w-4 h-4 text-blue-400"></i>
+                                        <span>{{ s.name }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-xs font-semibold text-slate-300">{{ s.category }}</td>
+                                    <td class="px-6 py-4 font-mono text-purple-400 font-bold">{{ s.proficiency }}%</td>
+                                    <td class="px-6 py-4 font-mono text-xs text-slate-400">{{ s.icon_class }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end space-x-2">
+                                            <button class="edit-skill-btn p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-400 transition-colors"
+                                                    data-id="{{ s.id }}"
+                                                    data-name="{{ s.name }}"
+                                                    data-category="{{ s.category }}"
+                                                    data-proficiency="{{ s.proficiency }}"
+                                                    data-icon="{{ s.icon_class }}"
+                                                    data-serial="{{ s.serial_order }}">
+                                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                            </button>
+                                            <form action="{{ url_for('admin_delete_skill', id=s.id) }}" method="POST" onsubmit="return confirm('Delete this skill?')">
+                                                <button type="submit" class="p-2 rounded-xl bg-slate-800 hover:bg-red-900/40 text-red-400 transition-colors">
+                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="px-6 py-8 text-center text-slate-500">No skills found. Add your first skill!</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CLIENT MESSAGES INBOX -->
+        <div id="tab-messages" class="admin-tab-content space-y-6 hidden">
+            <div>
+                <h2 class="text-xl font-bold text-white">Client Inbox</h2>
+                <p class="text-xs text-slate-400">Messages submitted by potential clients from your website contact form.</p>
+            </div>
+
+            <div class="space-y-4">
+                {% for msg in messages %}
+                    <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                            <div class="space-y-0.5">
+                                <div class="font-bold text-white text-base flex items-center space-x-2">
+                                    <span>{{ msg.name }}</span>
+                                    <span class="text-xs font-normal text-slate-400">({{ msg.email }})</span>
+                                </div>
+                                <div class="text-xs text-blue-400 font-mono">
+                                    Phone: {{ msg.phone or 'Not provided' }} | Subject: {{ msg.subject or 'General Inquiry' }}
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3">
+                                <span class="text-[11px] font-mono text-slate-500">{{ msg.created_at }}</span>
+                                <form action="{{ url_for('admin_delete_message', id=msg.id) }}" method="POST" onsubmit="return confirm('Delete message?')">
+                                    <button type="submit" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-900/40 text-red-400 transition-colors">
+                                        <i data-lucide="trash" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <p class="text-slate-300 text-sm leading-relaxed whitespace-pre-line">{{ msg.message }}</p>
+                    </div>
+                {% else %}
+                    <div class="text-center py-16 glass-card rounded-2xl border border-slate-800 text-slate-500">
+                        <i data-lucide="mail-check" class="w-10 h-10 mx-auto mb-2 opacity-50"></i>
+                        <p class="text-sm">Inbox is empty. Client inquiries will appear here.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- TAB 4: SITE SETTINGS & LOGO -->
+        <div id="tab-settings" class="admin-tab-content space-y-6 hidden">
+            <div class="max-w-3xl glass-card p-8 rounded-3xl border border-slate-800">
+                <h2 class="text-xl font-bold text-white mb-6">Website Profile, Logo & Admin Credentials</h2>
+                
+                <form action="{{ url_for('admin_update_settings') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    
+                    <!-- Website Logo Setting Box -->
+                    <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-700/80 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold text-blue-400 flex items-center space-x-2">
+                                <i data-lucide="image" class="w-4 h-4"></i>
+                                <span>Website Custom Logo</span>
+                            </h3>
+                            {% if site_settings.site_logo %}
+                                <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-lg bg-green-500/10 text-green-400 border border-green-500/20">Custom Logo Active</span>
+                            {% else %}
+                                <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-lg bg-slate-800 text-slate-400">Default Badge Logo Active</span>
+                            {% endif %}
+                        </div>
+
+                        {% if site_settings.site_logo %}
+                            <div class="flex items-center space-x-4 p-3 rounded-xl bg-slate-950 border border-slate-800">
+                                <span class="text-xs text-slate-400">Current Logo Preview:</span>
+                                <img src="{{ site_settings.site_logo }}" alt="Current Logo" class="h-10 w-auto object-contain rounded-lg border border-slate-700">
+                            </div>
+                        {% endif %}
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Option 1: Upload Logo File (PNG, SVG, JPG)</label>
+                                <input type="file" name="logo_file" accept="image/*" class="block w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Option 2: Logo Image URL</label>
+                                <input type="url" name="logo_url" value="{{ site_settings.site_logo or '' }}" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Details -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2">Owner Full Name</label>
+                            <input type="text" name="owner_name" value="{{ site_settings.owner_name or 'Subhrajit Bhattacharjee' }}" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2">Professional Role</label>
+                            <input type="text" name="owner_role" value="{{ site_settings.owner_role or 'Full-Stack Software Engineer & Creative UI Designer' }}" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-2">Bio / Intro</label>
+                        <textarea name="owner_bio" rows="3" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">{{ site_settings.owner_bio or '' }}</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2">Display Email & Login Email</label>
+                            <input type="email" name="email" value="{{ site_settings.email or 'subhrajitbhattacharjee@gmail.com' }}" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2">Phone Number</label>
+                            <input type="text" name="phone" value="{{ site_settings.phone or '+91 6009916591' }}" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-slate-800 space-y-4">
+                        <h3 class="text-sm font-bold text-purple-400">Change Admin Password</h3>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2">New Admin Password (Leave blank to keep current)</label>
+                            <input type="password" name="new_password" placeholder="Enter new password..." class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="px-6 py-3 text-sm font-bold rounded-xl bg-purple-600 text-white shadow-lg shadow-purple-600/20 hover:bg-purple-500 transition-all flex items-center space-x-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Save All Settings & Logo</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- MODALS SECTION -->
+
+<!-- RE-DESIGNED ADD PROJECT MODAL -->
+<div id="add-project-modal" class="modal-overlay hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="max-w-2xl w-full max-h-[90vh] flex flex-col bg-[#111622] rounded-3xl border border-slate-700/80 shadow-2xl overflow-hidden my-auto">
+        
+        <!-- Sticky Header -->
+        <div class="p-5 sm:p-6 border-b border-slate-800 bg-[#111622] flex items-center justify-between shrink-0">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <i data-lucide="folder-plus" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg sm:text-xl font-extrabold text-white">Add New Project</h3>
+                    <p class="text-xs text-slate-400">Fill details to list project on website and store.</p>
+                </div>
+            </div>
+            <button id="close-add-project-btn" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Scrollable Form Body -->
+        <form action="{{ url_for('admin_add_project') }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
+            <div class="p-6 overflow-y-auto space-y-6 text-slate-200">
+                
+                <!-- Section 1: Basic Info -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center space-x-2">
+                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                        <span>Basic Information</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Project Title *</label>
+                            <input type="text" name="title" required placeholder="e.g. AI E-Commerce Platform" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Category *</label>
+                            <input type="text" name="category" list="category-suggestions" required placeholder="e.g. Full-Stack Web App" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm">
+                            <datalist id="category-suggestions">
+                                <option value="Full-Stack Web App"></option>
+                                <option value="Mobile App"></option>
+                                <option value="SaaS / Dashboard"></option>
+                                <option value="AI / Machine Learning"></option>
+                                <option value="UI/UX Design"></option>
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Serial Order Position *</label>
+                            <input type="number" name="serial_order" value="1" min="1" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-blue-500 text-sm">
+                            <span class="text-[11px] text-slate-500 mt-1 block">Order #1 displays first on website.</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Price Tag (for Store)</label>
+                            <input type="text" name="price" value="Contact" placeholder="e.g. $199 / Commercial / Free" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Description -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-slate-300">Project Description *</label>
+                    <textarea name="description" rows="3" required placeholder="Write a brief overview of features, architectural highlights, and core functionality..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm leading-relaxed"></textarea>
+                </div>
+
+                <!-- Section 3: Thumbnail Source -->
+                <div class="space-y-3 p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+                    <h4 class="text-xs font-bold text-blue-400 flex items-center space-x-2">
+                        <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                        <span>Project Thumbnail Image</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5">Option A: Upload Image File</label>
+                            <input type="file" name="thumbnail_file" accept="image/*" class="block w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5">Option B: Image URL</label>
+                            <input type="url" name="thumbnail_url" placeholder="https://images.unsplash.com/..." class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs placeholder-slate-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Links & Tech Stack -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center space-x-2">
+                        <i data-lucide="link-2" class="w-3.5 h-3.5"></i>
+                        <span>Links & Technologies</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Live Demo URL</label>
+                            <input type="url" name="live_link" placeholder="https://example.com/demo" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">GitHub / Source Code URL</label>
+                            <input type="url" name="source_link" placeholder="https://github.com/username/project" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Tech Stack Tags (Comma Separated)</label>
+                        <input type="text" name="tech_stack" placeholder="Python, Flask, SQLite, React, TailwindCSS" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm">
+                    </div>
+                </div>
+
+                <!-- Section 5: Display Flags Toggles -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <label class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center space-x-3 cursor-pointer hover:bg-purple-500/20 transition-all">
+                        <input type="checkbox" name="is_featured" value="1" class="w-5 h-5 rounded bg-slate-900 border-slate-700 text-purple-600 focus:ring-purple-500">
+                        <div>
+                            <div class="text-xs font-bold text-purple-300">★ Highlight in Featured Frame</div>
+                            <div class="text-[11px] text-slate-400">Show in top hero spotlight frame on website.</div>
+                        </div>
+                    </label>
+
+                    <label class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center space-x-3 cursor-pointer hover:bg-emerald-500/20 transition-all">
+                        <input type="checkbox" name="is_store_item" value="1" class="w-5 h-5 rounded bg-slate-900 border-slate-700 text-emerald-600 focus:ring-emerald-500">
+                        <div>
+                            <div class="text-xs font-bold text-emerald-300">🛍 List in Projects Store</div>
+                            <div class="text-[11px] text-slate-400">Display item under Store section & page.</div>
+                        </div>
+                    </label>
+                </div>
+
+            </div>
+
+            <!-- Sticky Footer Actions -->
+            <div class="p-5 sm:p-6 border-t border-slate-800 bg-[#111622] shrink-0 flex items-center justify-end space-x-3">
+                <button type="button" onclick="document.getElementById('add-project-modal').classList.add('hidden')" class="px-5 py-2.5 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="px-6 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25 hover:scale-105 transition-all flex items-center space-x-2">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    <span>Save Project</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- RE-DESIGNED EDIT PROJECT MODAL -->
+<div id="edit-project-modal" class="modal-overlay hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="max-w-2xl w-full max-h-[90vh] flex flex-col bg-[#111622] rounded-3xl border border-slate-700/80 shadow-2xl overflow-hidden my-auto">
+        
+        <!-- Sticky Header -->
+        <div class="p-5 sm:p-6 border-b border-slate-800 bg-[#111622] flex items-center justify-between shrink-0">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                    <i data-lucide="edit-3" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg sm:text-xl font-extrabold text-white">Edit Project Details</h3>
+                    <p class="text-xs text-slate-400">Modify title, order, links, and featured status.</p>
+                </div>
+            </div>
+            <button id="close-edit-project-btn" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Scrollable Form Body -->
+        <form id="edit-project-form" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
+            <div class="p-6 overflow-y-auto space-y-6 text-slate-200">
+                
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center space-x-2">
+                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                        <span>Basic Information</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Project Title *</label>
+                            <input type="text" id="edit-proj-title" name="title" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Category *</label>
+                            <input type="text" id="edit-proj-category" name="category" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Serial Order Position *</label>
+                            <input type="number" id="edit-proj-serial" name="serial_order" min="1" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Price Tag (for Store)</label>
+                            <input type="text" id="edit-proj-price" name="price" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-slate-300">Project Description *</label>
+                    <textarea id="edit-proj-desc" name="description" rows="3" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm leading-relaxed"></textarea>
+                </div>
+
+                <div class="space-y-3 p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+                    <h4 class="text-xs font-bold text-blue-400 flex items-center space-x-2">
+                        <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                        <span>Update Thumbnail Image</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5">Upload New Image File</label>
+                            <input type="file" name="thumbnail_file" accept="image/*" class="block w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5">Image URL</label>
+                            <input type="url" id="edit-proj-thumb-url" name="thumbnail_url" class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center space-x-2">
+                        <i data-lucide="link-2" class="w-3.5 h-3.5"></i>
+                        <span>Links & Technologies</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Live Demo URL</label>
+                            <input type="url" id="edit-proj-live" name="live_link" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">GitHub / Source Code URL</label>
+                            <input type="url" id="edit-proj-source" name="source_link" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Tech Stack Tags</label>
+                        <input type="text" id="edit-proj-stack" name="tech_stack" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <label class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center space-x-3 cursor-pointer hover:bg-purple-500/20 transition-all">
+                        <input type="checkbox" id="edit-proj-featured" name="is_featured" value="1" class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-purple-600">
+                        <div>
+                            <div class="text-xs font-bold text-purple-300">★ Highlight in Featured Frame</div>
+                            <div class="text-[11px] text-slate-400">Show in top hero spotlight frame on website.</div>
+                        </div>
+                    </label>
+
+                    <label class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center space-x-3 cursor-pointer hover:bg-emerald-500/20 transition-all">
+                        <input type="checkbox" id="edit-proj-store" name="is_store_item" value="1" class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-600">
+                        <div>
+                            <div class="text-xs font-bold text-emerald-300">🛍 List in Projects Store</div>
+                            <div class="text-[11px] text-slate-400">Display item under Store section & page.</div>
+                        </div>
+                    </label>
+                </div>
+
+            </div>
+
+            <!-- Sticky Footer Actions -->
+            <div class="p-5 sm:p-6 border-t border-slate-800 bg-[#111622] shrink-0 flex items-center justify-end space-x-3">
+                <button type="button" onclick="document.getElementById('edit-project-modal').classList.add('hidden')" class="px-5 py-2.5 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="px-6 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/25 hover:scale-105 transition-all flex items-center space-x-2">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Update Changes</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- Add Skill Modal -->
+<div id="add-skill-modal" class="modal-overlay hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-md w-full glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 relative space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <h3 class="text-xl font-bold text-white">Add New Skill</h3>
+            <button id="close-add-skill-btn" class="p-2 rounded-xl text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <form action="{{ url_for('admin_add_skill') }}" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Skill Name *</label>
+                <input type="text" name="name" required placeholder="Python / Flask" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Category</label>
+                <select name="category" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                    <option value="Frontend">Frontend</option>
+                    <option value="Backend">Backend</option>
+                    <option value="Database & DevOps">Database & DevOps</option>
+                    <option value="Tools & Design">Tools & Design</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Proficiency % (0-100)</label>
+                    <input type="number" name="proficiency" min="0" max="100" value="90" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Serial Order</label>
+                    <input type="number" name="serial_order" min="1" value="1" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Lucide Icon Class</label>
+                <input type="text" name="icon_class" value="code" placeholder="code, terminal, database, layout, server, git-branch" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+            </div>
+
+            <button type="submit" class="w-full py-3.5 text-sm font-bold rounded-xl bg-purple-600 text-white hover:bg-purple-500 transition-colors">
+                Save Skill
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Skill Modal -->
+<div id="edit-skill-modal" class="modal-overlay hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-md w-full glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 relative space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <h3 class="text-xl font-bold text-white">Edit Skill</h3>
+            <button id="close-edit-skill-btn" class="p-2 rounded-xl text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <form id="edit-skill-form" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Skill Name *</label>
+                <input type="text" id="edit-skill-name" name="name" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Category</label>
+                <input type="text" id="edit-skill-category" name="category" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Proficiency %</label>
+                    <input type="number" id="edit-skill-proficiency" name="proficiency" min="0" max="100" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Serial Order</label>
+                    <input type="number" id="edit-skill-serial" name="serial_order" min="1" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Lucide Icon Class</label>
+                <input type="text" id="edit-skill-icon" name="icon_class" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+            </div>
+
+            <button type="submit" class="w-full py-3.5 text-sm font-bold rounded-xl bg-purple-600 text-white hover:bg-purple-500 transition-colors">
+                Update Skill
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
