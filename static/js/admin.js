@@ -1,6 +1,33 @@
-// Admin Management Logic - Smooth Glitch-Free Version
+// Admin Management Logic - Clean Simple Password Protection & Working Modals
 
 const ADMIN_EMAIL = "subhrajitbhattacharjee6@gmail.com";
+
+// Modal Helper Functions (Globally Accessible)
+window.openAddProjectModal = function() {
+    const modal = document.getElementById('add-project-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+};
+
+window.closeAddProjectModal = function() {
+    const modal = document.getElementById('add-project-modal');
+    if (modal) modal.classList.add('hidden');
+};
+
+window.openAddSkillModal = function() {
+    const modal = document.getElementById('add-skill-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+};
+
+window.closeAddSkillModal = function() {
+    const modal = document.getElementById('add-skill-modal');
+    if (modal) modal.classList.add('hidden');
+};
 
 function getLoginUrl() {
     const isStaticFile = window.location.protocol === 'file:' || window.location.pathname.endsWith('.html');
@@ -8,7 +35,6 @@ function getLoginUrl() {
 }
 
 function checkAdminSecurity() {
-    // If on Flask server (running via http on port 5000), Flask @login_required handles server-side auth
     const isFlaskServer = window.location.port === '5000' || window.location.pathname === '/admin';
     if (isFlaskServer) {
         localStorage.setItem('admin_auth', 'true');
@@ -21,7 +47,7 @@ function checkAdminSecurity() {
         return true;
     }
 
-    // Smooth Inline Auth Guard (No glitchy page redirects)
+    // Inline Auth Guard for unauthenticated static visitors
     const container = document.querySelector('main') || document.body;
     container.innerHTML = `
         <div class="min-h-[70vh] flex items-center justify-center p-6 text-center">
@@ -30,11 +56,11 @@ function checkAdminSecurity() {
                     🔒
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-white">Admin Authentication Required</h2>
-                    <p class="text-slate-400 text-xs mt-2">Please verify with 6-Digit Email OTP to access your control panel.</p>
+                    <h2 class="text-2xl font-bold text-white">Admin Password Required</h2>
+                    <p class="text-slate-400 text-xs mt-2">Log in with your admin password to access the control panel.</p>
                 </div>
                 <a href="${getLoginUrl()}" class="inline-block w-full py-3.5 text-sm font-bold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl shadow-purple-500/25 hover:scale-[1.02] transition-all">
-                    Open Email OTP Login Portal
+                    Go to Admin Password Login
                 </a>
             </div>
         </div>
@@ -85,7 +111,48 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAdminMessages();
     fillAdminSettings();
 
-    // Attach click listeners to admin nav links smoothly
+    // Attach Event Listeners to Open Buttons
+    const openAddProjBtn = document.getElementById('open-add-project-btn');
+    if (openAddProjBtn) {
+        openAddProjBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.openAddProjectModal();
+        });
+    }
+
+    const closeAddProjBtn = document.getElementById('close-add-project-btn');
+    if (closeAddProjBtn) {
+        closeAddProjBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.closeAddProjectModal();
+        });
+    }
+
+    const openAddSkillBtn = document.getElementById('open-add-skill-btn');
+    if (openAddSkillBtn) {
+        openAddSkillBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.openAddSkillModal();
+        });
+    }
+
+    const closeAddSkillBtn = document.getElementById('close-add-skill-btn');
+    if (closeAddSkillBtn) {
+        closeAddSkillBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.closeAddSkillModal();
+        });
+    }
+
+    // Modal Backdrop Clicks
+    const allModals = document.querySelectorAll('.modal-overlay');
+    allModals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.add('hidden');
+        });
+    });
+
+    // Navigation Tabs Click Listeners
     const navLinks = document.querySelectorAll('.admin-nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -125,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             projects.push(newProj);
             localStorage.setItem('site_projects', JSON.stringify(projects));
-            document.getElementById('add-project-modal').classList.add('hidden');
+            window.closeAddProjectModal();
             addProjForm.reset();
             renderAdminProjects();
         });
@@ -150,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             skills.push(newSkill);
             localStorage.setItem('site_skills', JSON.stringify(skills));
-            document.getElementById('add-skill-modal').classList.add('hidden');
+            window.closeAddSkillModal();
             addSkillForm.reset();
             renderAdminSkills();
         });
@@ -170,8 +237,14 @@ document.addEventListener('DOMContentLoaded', () => {
             settings.phone = document.getElementById('setting-phone').value;
             settings.site_logo = document.getElementById('setting-logo-url').value;
 
+            // Password change option
+            const newPass = document.getElementById('setting-new-pass')?.value;
+            if (newPass) {
+                localStorage.setItem('admin_custom_password', newPass);
+            }
+
             localStorage.setItem('site_settings', JSON.stringify(settings));
-            alert('Settings & Logo saved successfully!');
+            alert('Settings, Password & Logo saved successfully!');
         });
     }
 });
