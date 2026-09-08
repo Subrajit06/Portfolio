@@ -76,6 +76,98 @@ function getStoredData(key, fallback) {
     }
 }
 
+// Global Spotlight Switcher Function
+window.switchFeatured = function(idx) {
+    const projects = getStoredData('site_projects', DEFAULT_PROJECTS);
+    const featuredList = projects.filter(p => Number(p.is_featured) === 1);
+    if (!featuredList[idx]) return;
+    const feat = featuredList[idx];
+
+    updateFeaturedUI(feat);
+
+    const buttons = document.querySelectorAll('.feat-thumb-btn');
+    buttons.forEach((btn, i) => {
+        if (i === idx) {
+            btn.classList.add('ring-2', 'ring-blue-500');
+        } else {
+            btn.classList.remove('ring-2', 'ring-blue-500');
+        }
+    });
+};
+
+function updateFeaturedUI(feat) {
+    const imgEl = document.getElementById('feat-img');
+    if (imgEl && feat.thumbnail) imgEl.src = feat.thumbnail;
+
+    const catEl = document.getElementById('feat-category');
+    if (catEl) catEl.textContent = feat.category || 'Featured';
+
+    const titleEl = document.getElementById('feat-title');
+    if (titleEl) titleEl.textContent = feat.title || '';
+
+    const descEl = document.getElementById('feat-desc');
+    if (descEl) descEl.textContent = feat.description || '';
+
+    const stackEl = document.getElementById('feat-stack');
+    if (stackEl) {
+        const tags = (feat.tech_stack || '').split(',').filter(t => t.trim().length > 0);
+        stackEl.innerHTML = tags.map(tag => `<span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">${tag.trim()}</span>`).join('');
+    }
+
+    const liveEl = document.getElementById('feat-live');
+    if (liveEl) liveEl.href = feat.live_link || '#';
+
+    const sourceEl = document.getElementById('feat-source');
+    if (sourceEl) sourceEl.href = feat.source_link || '#';
+
+    if (window.lucide) lucide.createIcons();
+}
+
+// Global Category Filter Function
+window.filterProjects = function(cat, btn) {
+    const targetCat = cat || (btn ? btn.dataset.category : 'all') || 'all';
+
+    const btns = document.querySelectorAll('.filter-btn');
+    btns.forEach(b => {
+        b.className = 'filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-800/80 text-slate-400 hover:text-white transition-all';
+    });
+
+    if (btn) {
+        btn.className = 'filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white transition-all shadow';
+    } else {
+        btns.forEach(b => {
+            if (b.dataset.category === targetCat) {
+                b.className = 'filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white transition-all shadow';
+            }
+        });
+    }
+
+    const cards = document.querySelectorAll('.project-card');
+    cards.forEach(card => {
+        const cardCat = (card.dataset.category || '').toLowerCase().trim();
+        const filterCat = targetCat.toLowerCase().trim();
+
+        let isMatch = false;
+        if (filterCat === 'all' || filterCat === '') {
+            isMatch = true;
+        } else if (filterCat.includes('web') && cardCat.includes('web')) {
+            isMatch = true;
+        } else if (filterCat.includes('mobile') && cardCat.includes('mobile')) {
+            isMatch = true;
+        } else if ((filterCat.includes('saas') || filterCat.includes('dashboard')) && (cardCat.includes('saas') || cardCat.includes('dashboard'))) {
+            isMatch = true;
+        } else if (cardCat === filterCat || cardCat.includes(filterCat) || filterCat.includes(cardCat)) {
+            isMatch = true;
+        }
+
+        if (isMatch) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     // Load Data from LocalStorage
     const settings = getStoredData('site_settings', DEFAULT_SETTINGS);
@@ -102,6 +194,36 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSkills(skills);
     renderProjects(projects);
     renderStore(projects);
+
+    // Global Event Delegation for Featured Thumbnails (Works for static and Flask template)
+    document.addEventListener('click', (e) => {
+        const featBtn = e.target.closest('.feat-thumb-btn');
+        if (featBtn) {
+            e.preventDefault();
+            document.querySelectorAll('.feat-thumb-btn').forEach(b => b.classList.remove('ring-2', 'ring-blue-500'));
+            featBtn.classList.add('ring-2', 'ring-blue-500');
+
+            const d = featBtn.dataset;
+            if (d.title || d.img) {
+                updateFeaturedUI({
+                    title: d.title,
+                    description: d.desc,
+                    thumbnail: d.img,
+                    category: d.category,
+                    tech_stack: d.stack,
+                    live_link: d.live,
+                    source_link: d.source
+                });
+            }
+        }
+
+        const filterBtn = e.target.closest('.filter-btn');
+        if (filterBtn) {
+            e.preventDefault();
+            const cat = filterBtn.dataset.category || filterBtn.getAttribute('data-category') || 'all';
+            window.filterProjects(cat, filterBtn);
+        }
+    });
 
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
@@ -293,10 +415,10 @@ function renderProjects(projects) {
 
     if (filterBox) {
         filterBox.innerHTML = `
-            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white shadow" onclick="filterProjects('all', this)">All Projects</button>
-            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-800/80 text-slate-400" onclick="filterProjects('Full-Stack Web App', this)">Web Apps</button>
-            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-800/80 text-slate-400" onclick="filterProjects('Mobile App', this)">Mobile Apps</button>
-            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-800/80 text-slate-400" onclick="filterProjects('SaaS / Dashboard', this)">SaaS & Dashboards</button>
+            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white shadow" data-category="all">All Projects</button>
+            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-800/80 text-slate-400" data-category="Full-Stack Web App">Web Apps</button>
+            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-800/80 text-slate-400" data-category="Mobile App">Mobile Apps</button>
+            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-800/80 text-slate-400" data-category="SaaS / Dashboard">SaaS & Dashboards</button>
         `;
     }
 
@@ -365,19 +487,4 @@ function renderStore(projects) {
     `).join('');
 
     if (window.lucide) lucide.createIcons();
-}
-
-function filterProjects(cat, btn) {
-    const btns = document.querySelectorAll('.filter-btn');
-    btns.forEach(b => b.className = 'filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-800/80 text-slate-400');
-    btn.className = 'filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white shadow';
-
-    const cards = document.querySelectorAll('.project-card');
-    cards.forEach(card => {
-        if (cat === 'all' || card.dataset.category === cat) {
-            card.style.display = 'flex';
-        } else {
-            card.style.display = 'none';
-        }
-    });
 }
